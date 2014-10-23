@@ -1,0 +1,34 @@
+\documentclass[paper=letter]{article}
+
+%%% Custom headers/footers (fancyhdr package)
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead{}											% No page header
+\fancyfoot[L]{}											% Empty 
+\fancyfoot[C]{}											% Empty
+\fancyfoot[R]{\thepage}									% Pagenumbering
+
+
+\title{Performance Evaluation of Debian Linux on a Rasberry Pi}
+\author{David Lisuk, Josh Marxen}
+\date{\today}
+
+
+%%% Begin document
+\begin{document}
+\maketitle
+\section{Introduction}
+
+\section{Machine Description}
+\input{machine_description}
+\section{Experiments}
+
+\subsection{CPU, Scheduling, and OS Services}
+\subsubsection{Measurement Overhead}\input{experiments/exp_1_1}
+\subsubsection{Procedure Call Overhead}\input{experiments/exp_1_2}
+\subsubsection{System Call Overhead}\input{experiments/exp_1_3}
+\subsubsection{Task Creation Time}
+\subsubsection{Context Switch Time}
+
+
+\end{document}

@@ -1,3 +1,7 @@
 raspbian-ccr
 src/*.o
 .*
+*.log
+*.aux
+*.gz
+*.pdf
