@@ -5,3 +5,7 @@ src/*.o
 *.aux
 *.gz
 *.pdf
+final_report-blx.bib
+*.bbl
+*.blg
+*.run.xml
