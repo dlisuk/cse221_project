@@ -1,0 +1,46 @@
+
+We developed a general wrapper program which calls an experiment specific inlined function.
+This allows all of our experiments to share the number of running times, the statistic computation code and other things.
+The basic code is shown below.
+
+\begin{verbatim}
+static inline unsigned long execute();
+
+int main(void){
+  int i;
+  for(i=1; i <= MAX_N; i++){
+    unsigned long t_start = ccnt_read();
+    execute();
+    unsigned long t_end = ccnt_read();
+    //update mean/var
+    ...
+  }
+  //report mean/var
+}
+\end{verbatim}
+
+\subsubsection{Computing Results}
+
+We run each test 1 million times and report mean/standard deviation.
+
+We utilize a streaming mean/variance algorithm popularized by Knuth\ref{meanvar}:
+
+$$\bar x_n = \frac{(n-1) \, \bar x_{n-1} + x_n}{n} = \bar x_{n-1} + \frac{x_n - \bar x_{n-1}}{n} \!$$
+$$s^2_n = \frac{(n-2)}{(n-1)} \, s^2_{n-1} + \frac{(x_n - \bar x_{n-1})^2}{n}, \quad n>1 $$
+
+This prevents us from having to store or download a large number of data points for analysis.  We simply store 4 numbers which are likely to fit in registers.
+
+We currently don't remove any overhead measures as we don't currently trust our data.
+
+\subsubsection{Getting Time}
+We are currently using the {\tt clock\_gettime} c function to get the current nano time stamp.
+We are not sure if this is the fastest way but it seems the rdtsc instruction's equivalent on arm requires privileged mode by default.
+We are working on a linux kernel mod that will allow us to utilize this to improve results in the future.
+
+The assembly code for the time getting function has 9 instructions, 4 before the get time call and 4 after.  
+
+There are often discrepancies in reported time between runs.  We believe this is due to variation in server load.  
+We run each experiment program several times and report the mean/standard deviation for the run corresponding to the smallest mean.  We believe this makes sense since we aim to measure ideal performance rather than loaded performance.  
+
+\subsubsection{Compilation}
+We use gcc version 4.8.3 with the flag -O0 to prevent optimization.

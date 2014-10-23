@@ -1,0 +1,25 @@
+The third experiment we ran was to measure the amount of time taken by making an operating system call.
+To do this we wish to execute a call which will do very little without being cached.  
+We decided to use the {\tt chmod} system call to try and change the permissions of the {\tt /etc/passwd} file.
+Since we are not running in super user mode this this will be denied quickly and will be checked every time.
+
+Thus we implement this experiment function: 
+\begin{verbatim}
+static inline unsigned long execute(){
+  int rc;
+  rc = syscall(SYS_chmod, "/etc/passwd", 0444);
+  return rc;
+}
+\end{verbatim}
+
+We expect this to be an order of magnitude larger than the basic overhead measure (which we got ~800 ns for) since we have to switch to the OS, do some work, and then switch back to our user program.  Thus we predict about 8,000 ns for this test
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}\hline
+Mean & 9077 ns \\
+SD & 4 ns\\\hline
+\end{tabular}
+\end{table}
+
+We were quite a bit closer to our predicted measure than earlier experiments.  This is possibly due to a forced serialization of execution caused by the OS switching and by the clock measurement error being dominated by the more major tasks.
