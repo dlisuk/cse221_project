@@ -1,1 +1,1 @@
-#define MAX_N 1000
+#define MAX_N 1000000

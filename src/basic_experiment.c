@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "constants.h"
 #include "cycles.c"
@@ -35,7 +36,7 @@ int main(void){
   }
   unsigned long outer_end = ccnt_read(&gettime_now);
 
-  var_new = var_new/(MAX_N-1);
+  var_new = sqrt(var_new/(MAX_N-1));
   printf("OUTER MEASRUES\n");
   printf("Total\t%lu\n", outer_end-outer_start );
   printf("Mean\t%f\n\n", (outer_end-outer_start)/(1.0*MAX_N));
