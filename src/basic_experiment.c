@@ -27,7 +27,7 @@ int main(void){
       mean_old = mean_new = delta;
     }else{
       mean_new = mean_old + (delta - mean_old)/i;
-      var_new  = var_old + (delta - mean_old)*(delta - mean_new);
+      var_new  = ((i-1)*var_old + (delta - mean_old)*(delta - mean_new))/i;
 
       mean_old = mean_new;
       var_old  = var_new;
