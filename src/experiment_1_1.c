@@ -1,5 +1,5 @@
 #include "basic_experiment.c"
 
-static inline unsigned execute(void){
-  return ccnt_read();
+static unsigned long execute(struct timespec *gettime_now){
+  return ccnt_read(gettime_now);
 }

@@ -1,9 +1,9 @@
-#Taken from http://blog.regehr.org/archives/794
-#Use the read the instruction counter on rasbery pi
+//Taken from http://blog.regehr.org/archives/794
+//Use the read the instruction counter on rasbery pi
+#include <time.h>
 
-static inline unsigned ccnt_read (void)
+inline unsigned long ccnt_read (struct timespec *gettime_now)
 {
-  unsigned cc;
-  __asm__ volatile ("mrc p15, 0, %0, c15, c12, 1":"=r" (cc));
-  return cc;
+  clock_gettime(CLOCK_REALTIME, gettime_now);
+  return gettime_now->tv_nsec;
 }
