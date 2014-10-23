@@ -6,6 +6,8 @@
 #include "constants.h"
 #include "cycles.c"
 
+int child_wins = 0;
+
 unsigned long measure() {
 
     int pfd[2];
@@ -17,7 +19,7 @@ unsigned long measure() {
     t_start = ccnt_read();
     if (fork()) { //parent
         t_end = ccnt_read();
-
+        //read(pfd[0], (char*)&ctime, sizeof(unsigned long));
         //close write pipe
         close(pfd[1]);
     } else { // child
@@ -38,6 +40,7 @@ unsigned long measure() {
     close(pfd[0]);
     // if child ran first, t_end should be child start
     if(ctime < t_end) {
+        ++child_wins;
         t_end = ctime;
     }
 
@@ -65,7 +68,7 @@ int main(void){
       mean_old = mean_new = delta;
     }else{
       mean_new = mean_old + (delta - mean_old)/i;
-      var_new  = var_old + (delta - mean_old)*(delta - mean_new);
+      var_new  = ((i-1)*var_old + (delta - mean_old)*(delta - mean_new))/i;
 
       mean_old = mean_new;
       var_old  = var_new;
@@ -81,7 +84,7 @@ int main(void){
           mean_new_noout = mean_old_noout = delta;
         } else {
           mean_new_noout = mean_old_noout + (delta - mean_old_noout)/o_count;
-          var_new_noout = var_old_noout + (delta - mean_old_noout) * (delta - mean_new_noout);
+          var_new_noout = ((o_count-1)*var_old_noout + (delta - mean_old_noout) * (delta - mean_new_noout))/o_count;
           mean_old_noout = mean_new_noout;
           var_old_noout = var_new_noout;
         }
@@ -107,4 +110,5 @@ int main(void){
   printf("INLIERS:%d\n",o_count);
   printf("MEAN:%f\nSTD_DEV:%f\n\n", mean_new_noout, var_new_noout);
 
+  printf("CHILD WINS:%d\n", child_wins);
 }
