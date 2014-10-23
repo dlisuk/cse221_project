@@ -1,0 +1,45 @@
+In our final experiment, we were to measure the time taken for a context switch to occur. As before, time did not permit us to extend this investigation to kernel-thread context switches, so we present data only for ordinary process context switches.
+
+We induced context switches using the following method (again, note that ``execute" performs the time measurement within itself, rather than relying on external measurement before and after the function).
+\newpage
+
+\noindent \begin{verbatim}
+unsigned long measure() {
+
+  unsigned long block_time, recv_time;
+
+  write(p2c[1], "1234", 4); // send some dummy data to earlier-spawned child process
+  // read blocks parent process, waits for child process to respond with its time of receipt
+  block_time = ccnt_read();
+  read(c2p[0], (char*)&recv_time, sizeof(unsigned long)); 
+  
+  //handle clock overflow
+  if(recv_time < block_time) recv_time += 1000000000;
+
+  return recv_time - block_time;
+}
+\end{verbatim}
+
+\noindent The child reads messages from the parent as follows:
+
+\noindent \begin{verbatim}
+while(1) {
+
+  read(p2c[0], inmsg, 4);
+  recv_time = ccnt_read();
+
+  if(!strcmp(inmsg, "done")) {
+    close(p2c[0]);
+    close(c2p[1]);
+    exit(0);
+  }
+  
+  // send time of receipt
+  write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
+}
+\end{verbatim}
+
+This method is fairly reliable. Immediately after the parent calls ``read", the parent blocks, since there is no way the child has received the message yet on this uniprocessor machine (assuming no context switch occurred between the sending and the read call). This frees the CPU for the child process, which receives the message and immediately records its time. The only overhead comes from the child executing the ``read" call. Assuming there are no other processes scheduled (which we took pains to ensure), this time difference is exactly one context switch.
+
+The average time between the message is sent from the parent and received by the child is 21247ns, after excluding about ~100 outliers (defined as times exceeding 100000ns). Given that the overhead is the time for a system call, which was measured to be 9077ns, to get a value of 12170 for the context switch time.
+
