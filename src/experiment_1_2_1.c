@@ -1,9 +1,9 @@
 #include "basic_experiment.c"
 
-unsigned function_1(unsigned x_1){
-  return ccnt_read();
+unsigned function(unsigned x_1){
+  return x_1;
 }
 
-static inline unsigned execute(void){
-  return function_1(1);
+static inline unsigned long execute(struct timespec *gettime_now){
+  return function(1);
 }
