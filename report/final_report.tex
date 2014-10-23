@@ -1,6 +1,9 @@
 \documentclass[paper=letter]{article}
 
 %%% Custom headers/footers (fancyhdr package)
+\usepackage[backend=bibtex,style=numeric-comp]{biblatex}
+\bibliography{bib.bib}
+\usepackage{graphicx}
 \usepackage{fancyhdr}
 \pagestyle{fancyplain}
 \fancyhead{}											% No page header
@@ -22,7 +25,7 @@
 \section{Machine Description}
 \input{machine_description}
 \section{Experiments}
-
+\input{experiments/intro}
 \subsection{CPU, Scheduling, and OS Services}
 \subsubsection{Measurement Overhead}\input{experiments/exp_1_1}
 \subsubsection{Procedure Call Overhead}\input{experiments/exp_1_2}
@@ -30,5 +33,7 @@
 \subsubsection{Task Creation Time}
 \subsubsection{Context Switch Time}
 
+\newpage
+\printbibliography
 
 \end{document}

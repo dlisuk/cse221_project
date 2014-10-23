@@ -1,0 +1,35 @@
+To run our experiments we used a Raspberry Pi model B single board computer.   
+This is a simple ARM 6 based computer which is availible for under \$50.
+We run a Debian derivative on it for all performance measurements.
+See table \ref{tbl:specs} for details on the hardware specs of the machine.
+
+\begin{table}[h]
+\label{tbl:specs}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+                     & Documentation            \\ \hline
+\multicolumn{2}{|c|}{\textbf{CPU}}              \\ \hline
+Type                 & ARM 6 Compatible         \\ \hline
+Model                & ARM1176JZF-S             \\ \hline
+Cycle Time           & 1.4ns                    \\ \hline
+L1 Cache             & 32KB (Ins+Data)          \\ \hline
+L2 Cache             & 12KB (CPU+GPU)           \\ \hline
+\multicolumn{2}{|c|}{\textbf{Memory}}           \\ \hline
+Size                 & 512MB(CPU+GPU)           \\ \hline
+Bus                  & DDR2                     \\ \hline
+\multicolumn{2}{|c|}{\textbf{IO Bus}}           \\ \hline
+Speed                & Unknown                  \\ \hline
+\multicolumn{2}{|c|}{\textbf{Disk}}             \\ \hline
+Type                 & Class 4 SD Card          \\ \hline
+Size                 & 16GB                     \\ \hline
+\multicolumn{2}{|c|}{\textbf{Network Card}}     \\ \hline
+Speed                & 100MBPS                  \\ \hline
+\multicolumn{2}{|c|}{\textbf{Operating System}} \\ \hline
+Type                 & Linux                    \\ \hline
+Distribution       & Raspbian(Debian)\\ \hline
+Version             & Wheezy\\ \hline
+Kernel Version  & 3.12.30+ \\\hline
+\end{tabular}
+\caption{Table of specs for the Rasberry Pi Model B\cite{infosheet}\cite{rpicomp}\cite{elinux}}
+\end{table}
