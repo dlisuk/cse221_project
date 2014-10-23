@@ -66,23 +66,23 @@ void teardown() {
 }
 
 unsigned long measure() {
-  unsigned long send_time = ccnt_read();
-  unsigned long recv_time;
+  unsigned long block_time, recv_time;
   //send message to child
   write(p2c[1], "8==D", 4);
   //wait for child response
+  block_time = ccnt_read();
   read(c2p[0], (char*)&recv_time, sizeof(unsigned long));
 
   //printf("msg rcv at %d\n",recv_time);
 
-  if(recv_time < send_time) {
+  if(recv_time < block_time) {
     recv_time += 1000000000;
   }
 
-  v1 = send_time;
+  v1 = block_time;
   v2 = recv_time;
 
-  return recv_time - send_time;
+  return recv_time - block_time;
 }
 
 int main(void){
@@ -103,14 +103,14 @@ int main(void){
       mean_old = mean_new = delta;
     }else{
       mean_new = mean_old + (delta - mean_old)/i;
-      var_new  = var_old + (delta - mean_old)*(delta - mean_new);
+      var_new  = ((i-1)*var_old + (delta - mean_old)*(delta - mean_new))/i;
 
       mean_old = mean_new;
       var_old  = var_new;
     }
 
     //periodic printouts
-
+/*
     if(i%10000 == 0) {
       printf("sent: %d\n", v1);
       printf("recv: %d\n", v2);
@@ -126,7 +126,7 @@ int main(void){
           mean_new_noout = mean_old_noout = delta;
         } else {
           mean_new_noout = mean_old_noout + (delta - mean_old_noout)/o_count;
-          var_new_noout = var_old_noout + (delta - mean_old_noout) * (delta - mean_new_noout);
+          var_new_noout = ((o_count-1)*var_old_noout + (delta - mean_old_noout) * (delta - mean_new_noout))/o_count;
           mean_old_noout = mean_new_noout;
           var_old_noout = var_new_noout;
         }
