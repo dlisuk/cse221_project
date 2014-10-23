@@ -7,20 +7,19 @@
 /**
  * Prototype for function to measure, should return the number of clock cycles
  */
-static inline unsigned long execute(struct timespec *gettime_now);
+static inline unsigned long execute();
 
 int main(void){
-  struct timespec gettime_now;
   double mean_old, mean_new = 0.0;
   double var_old, var_new   = 0.0;
 
   printf("RUNNING MEASURE %d TIMES\n\n", MAX_N);
-  unsigned long outer_start = ccnt_read(&gettime_now);
+  unsigned long outer_start = ccnt_read();
   int i;
   for(i=1; i <= MAX_N; i++){
-    unsigned long t_start = ccnt_read(&gettime_now);
-    execute(&gettime_now);
-    unsigned long t_end = ccnt_read(&gettime_now);
+    unsigned long t_start = ccnt_read();
+    execute();
+    unsigned long t_end = ccnt_read();
 
     double delta = t_end - t_start; 
 
@@ -34,7 +33,7 @@ int main(void){
       var_old  = var_new;
     }
   }
-  unsigned long outer_end = ccnt_read(&gettime_now);
+  unsigned long outer_end = ccnt_read();
 
   var_new = sqrt(var_new/(MAX_N-1));
   printf("OUTER MEASRUES\n");

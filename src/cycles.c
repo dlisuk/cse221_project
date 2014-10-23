@@ -2,8 +2,9 @@
 //Use the read the instruction counter on rasbery pi
 #include <time.h>
 
-inline unsigned long ccnt_read (struct timespec *gettime_now)
+struct timespec gettime_now;
+inline unsigned long ccnt_read ()
 {
-  clock_gettime(CLOCK_REALTIME, gettime_now);
-  return gettime_now->tv_nsec;
+  clock_gettime(CLOCK_REALTIME, &gettime_now);
+  return gettime_now.tv_nsec;
 }
