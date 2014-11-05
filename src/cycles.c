@@ -3,7 +3,7 @@
 #include <time.h>
 
 struct timespec gettime_now;
-inline unsigned long ccnt_read ()
+static inline unsigned long ccnt_read ()
 {
   clock_gettime(CLOCK_REALTIME, &gettime_now);
   return gettime_now.tv_nsec;

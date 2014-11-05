@@ -1,4 +1,4 @@
-SRCS = $(wildcard experiment_*.c)
+SRCS = $(wildcard experiment_*_*.c)
 
 all: $(SRCS:.c=)
 
