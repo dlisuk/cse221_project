@@ -21,6 +21,9 @@ int main(void){
     execute();
     unsigned long t_end = ccnt_read();
 
+    if(t_end < t_start) {
+        t_end+=1000000000;
+    }
     double delta = t_end - t_start; 
 
     if( i == 1){
