@@ -1,41 +1,60 @@
 #include "basic_experiment.c"
+#include <unistd.h>
+#include <errno.h>
 
 void setup(){}
 void teardown(){}
 
 unsigned long measure() {
 
-    do {
-        int pfd[2];
-        pipe(pfd); //create communication pipe
-        // execute experiment
-        unsigned long t_start;
-        unsigned long t_end; //parent post-fork
-        unsigned long ctime; //child  post-fork
-        t_start = ccnt_read();
-        if (fork()) { //parent
-    	    t_end = ccnt_read();
-    	    read(pfd[0], (char*)&ctime, sizeof(unsigned long));
-    	    //close write pipe
-    	    close(pfd[1]);
-    	} else { // child
-    	    t_end = ccnt_read();
-	
-            //close read pipe
-            close(pfd[0]);
+    printf("measuring: ");
 
-            //send time
-            write(pfd[1], (char*)&t_end, sizeof(unsigned long));
+    int pfd[2];
+    unsigned long ctime; //child  post-fork
+    struct timespec t_start_ts, t_end_ts;
 
-            //close pipe and exit
-            close(pfd[1]);
-            exit(0);
+
+    pipe(pfd); //create communication pipe
+    printf("pipe created ");
+    // execute experiment
+    GT(t_start_ts);
+    if (vfork()) { //parent
+        printf("parent resumed ");
+        if(errno) {
+          printf("Error: ");
+          if(errno == EAGAIN) {
+            printf("process limit reached\n");
+          } else if (errno == ENOMEM) {
+            printf("no memory\n");
+          }
+          errno = 0;
+          return 0;
         }
+        read(pfd[0], (char*)&ctime, sizeof(unsigned long));
+        //close write pipe
+        close(pfd[1]);
+
         // close read pipe
         close(pfd[0]);
-        // if child ran first, t_end should be child start
-    } while(ctime > t_end || t_end < t_start); 
 
-    return t_end - t_start;
+    } else { // child
+        printf("child created ");
+        GT(t_end_ts);
+        //close read pipe
+        close(pfd[0]);
+
+        //send time
+        write(pfd[1], (char*)&(t_end_ts.tv_nsec), sizeof(unsigned long));
+
+        //close pipe and exit
+        close(pfd[1]);
+        printf("child finished ");
+        exit(0);
+    }
+
+    printf("complete\n");
+
+    return absdiff(t_start_ts.tv_nsec, ctime);
+
 
 }

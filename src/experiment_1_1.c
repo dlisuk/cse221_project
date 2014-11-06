@@ -1,11 +1,13 @@
 #include "basic_experiment.c"
-// #include "cycles.c"
 
 void setup() {}
 void teardown(){}
 
 unsigned long measure() {
-  unsigned long m0 = ccnt_read();
-  unsigned long m1 = ccnt_read();
-  return m1-m0; 
+  struct timespec t0, t1;
+  GT(t0);GT(t1);
+  if(t1.tv_nsec < t0.tv_nsec) {
+    t1.tv_nsec+=1000000000;
+  }
+  return t1.tv_nsec - t0.tv_nsec;
 }

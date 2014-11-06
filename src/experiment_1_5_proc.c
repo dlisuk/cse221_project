@@ -18,7 +18,7 @@ void setup() {
 
     char inmsg[5];
     inmsg[4]='\0';
-    unsigned long recv_time;
+    struct timespec recv_time;
 
     // for parent to child, close write descriptor
     close(p2c[1]);
@@ -29,7 +29,7 @@ void setup() {
 
       //wait for parent to send msg
       read(p2c[0], inmsg, 4);
-      recv_time = ccnt_read();
+      GT(recv_time);
       //printf("msg %s recv at %d\n", inmsg, recv_time);
 
       //if parent indicates done, quit
@@ -41,7 +41,7 @@ void setup() {
 
       //else write time of msg reciept
       if(!strcmp(inmsg, "8==D")) {
-      	write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
+      	write(c2p[1], (char*)&(recv_time.tv_nsec), sizeof(unsigned long));
       }
     }
   } else { //parent closes appropriate descriptors
@@ -61,19 +61,13 @@ void teardown() {
 
 unsigned long measure() {
 
-  do {
-    unsigned long block_time, recv_time;
-    //send message to child
-    write(p2c[1], "8==D", 4);
-    //wait for child response
-    block_time = ccnt_read();
-    read(c2p[0], (char*)&recv_time, sizeof(unsigned long));
-  } while(recv_time < block_time);
+  struct timespec block_time;
+  unsigned long recv_time;
+  //send message to child
+  write(p2c[1], "8==D", 4);
+  //wait for child response
+  GT(block_time);
+  read(c2p[0], (char*)&recv_time, sizeof(unsigned long));
 
-  /*
-  v1 = block_time;
-  v2 = recv_time;
-  // */
-
-  return recv_time - block_time;
+  return absdiff(block_time.tv_nsec, recv_time);
 }

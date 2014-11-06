@@ -8,3 +8,14 @@ static inline unsigned long ccnt_read ()
   clock_gettime(CLOCK_REALTIME, &gettime_now);
   return gettime_now.tv_nsec;
 }
+
+unsigned long absdiff(unsigned long t1, unsigned long t2) {
+
+  if(t2 < t1) {
+    t2+=1000000000;
+  }
+  return t2 - t1;
+
+}
+
+#define GT(X) clock_gettime(CLOCK_MONOTONIC, &(X))

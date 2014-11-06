@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "constants.h"
 #include "cycles.c"
@@ -12,9 +13,18 @@ void setup();
 unsigned long measure();
 void teardown();
 
+int c(const void * p1, const void * p2) {
+  unsigned long l1 = *((unsigned long *)p1);
+  unsigned long l2 = *((unsigned long *)p2);
+  if(l1 < l2) return -1;
+  if(l1 > l2) return 1;
+  return 0;
+}
+
 int main(void){
   double mean_old, mean_new = 0.0;
   double var_old, var_new   = 0.0;
+  unsigned long * measurements = (unsigned long *)malloc(MAX_N*sizeof(unsigned long));
 
   setup();
   printf("RUNNING MEASURE %d TIMES\n\n", MAX_N);
@@ -23,7 +33,10 @@ int main(void){
   for(i=1; i <= MAX_N; i++){
 
     unsigned long delta_int = measure();
+    measurements[i-1] = delta_int;
     double delta = delta_int;
+
+    printf("trial:%d\n", i);
 
     if( i == 1){
       mean_old = mean_new = delta;
@@ -36,9 +49,10 @@ int main(void){
     }
   }
   unsigned long outer_end = ccnt_read();
-  
   teardown();
-
+  printf("sorting\n");
+  qsort(measurements, MAX_N, sizeof(unsigned long), &c);
+  printf("sorted\n");
   var_new = sqrt(var_new/(MAX_N-1));
   printf("OUTER MEASRUES\n");
   printf("Total\t%lu\n", outer_end-outer_start );
@@ -46,5 +60,6 @@ int main(void){
 
   printf("INNER MEASURES\n");
   printf("MEAN\t%f\nSTD_DEV\t%f\n\n", mean_new, var_new);
+  printf("MEDIAN\t%d\n", measurements[MAX_N >> 1]);
 
 }

@@ -8,9 +8,9 @@ void teardown() {}
 
 unsigned long measure(){
   int rc;
-  unsigned long s = ccnt_read();
+  struct timespec s, e;
+  GT(s);
   rc = syscall(SYS_chmod, "/etc/passwd", 0444);
-  unsigned long e = ccnt_read();
-  
-  return e-s;
+  GT(e);
+  return absdiff(s.tv_nsec, e.tv_nsec);
 }
