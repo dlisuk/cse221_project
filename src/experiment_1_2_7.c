@@ -3,17 +3,24 @@
 void setup() {}
 void teardown(){}
 
-struct timespec inside_time, outside_time;
+unsigned long i, o;
 
 void f0(int v1, int v2, int v3, int v4, int v5, int v6, int v7) {
-  GT(inside_time);
+  GET_LOW(i);
 }
 
 unsigned long measure () {
-  GT(outside_time);
-  f0(1,2,3,4,5,6,7);
-  if(inside_time.tv_nsec < outside_time.tv_nsec) {
-    inside_time.tv_nsec += 1000000000;
-  }
-  return inside_time.tv_nsec - outside_time.tv_nsec;
+  // make sure i, o in cache and TLB
+  i=0;
+  o=0;
+  int v1 = 1;
+  int v2 = 2;
+  int v3 = 3;
+  int v4 = 4;
+  int v5 = 5;
+  int v6 = 6;
+  int v7 = 7;
+  GET_LOW(o);
+  f0(v1,v2,v3,v4,v5,v6,v7);
+  return absdiff(o, i);
 }

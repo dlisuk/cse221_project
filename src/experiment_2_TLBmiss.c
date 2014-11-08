@@ -1,0 +1,50 @@
+#include "basic_experiment.c"
+
+char tlb[(TLB_ENTRIES+2)*PAGE_SIZE];
+char * dyn = 0;
+char * start_page;
+int alttag;
+unsigned long s, e;
+
+void setup() {
+
+  // malloc dyn
+  dyn = (char*) malloc(1);
+
+  // caculate altpage
+  alttag = ((int)dyn ^ 32) & (PAGE_SIZE - 32);
+
+  // find first page boundary in tlb
+  start_page = (char *)(((int)tlb + PAGE_SIZE) & (~(PAGE_SIZE - 1)) );
+
+  // put dyn in cache
+  *dyn = 0;
+
+}
+void teardown() {
+
+  free(dyn);
+
+}
+
+unsigned long measure() {
+
+  // where is dyn?
+  *dyn = 0;
+
+  // flush tlb, keep dyn in cache
+  char * s = start_page + alttag;
+  int i;
+  for(i = 0; i<TLB_ENTRIES; ++i) {
+    *s = *s;
+    s+=PAGE_SIZE;
+  }
+
+  // load pointer to dyn data
+  asm volatile("ldr	r4, .L18");   // address of dyn
+  asm volatile("ldr	r4, [r4]");   // data in dyn, pointer
+  GET_LOW(s);
+  asm volatile("ldr	r4, [r4]");   // read *dyn
+  GET_LOW(e);
+
+}

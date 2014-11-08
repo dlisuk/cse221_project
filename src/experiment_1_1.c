@@ -4,10 +4,8 @@ void setup() {}
 void teardown(){}
 
 unsigned long measure() {
-  struct timespec t0, t1;
-  GT(t0);GT(t1);
-  if(t1.tv_nsec < t0.tv_nsec) {
-    t1.tv_nsec+=1000000000;
-  }
-  return t1.tv_nsec - t0.tv_nsec;
+  unsigned long t0 = 0, t1 = 0;
+  GET_LOW(t0);
+  GET_LOW(t1);
+  return absdiff(t0, t1);
 }
