@@ -70,7 +70,7 @@ unsigned long measure() {
   int v1 = c2p[0];
   char * v2 = (char*)&recv_time;
   int v3 = sizeof(unsigned long);
-  GT(block_time);
+  GET_LOW(block_time);
   read(v1, v2, v3);
 
   return absdiff(block_time, recv_time);

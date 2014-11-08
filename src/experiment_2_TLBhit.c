@@ -20,7 +20,7 @@ unsigned long measure() {
   v = 0;
 
   //return absdiff(s, e);
-  asm volatile ("ldr	r4, .L15");
+  asm volatile ("ldr	r4, .L17");
   GET_LOW(s);
   asm volatile ("ldr	r4, [r4]");
   GET_LOW(e);

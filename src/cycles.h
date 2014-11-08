@@ -23,3 +23,7 @@ inline void reset(){
 #define GET_HIGH(value) asm volatile("mrc   p15, 0, %0, c15, c12, 2" : "=r"(value));
 #define GET_LOW(value) asm volatile("mrc   p15, 0, %0, c15, c12, 1" : "=r"(value));
 
+unsigned long absdiff(unsigned long s, unsigned long e) {
+  //for now, don't worry about overflow correction
+  return e - s;
+}
