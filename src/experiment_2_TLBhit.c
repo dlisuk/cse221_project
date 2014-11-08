@@ -21,8 +21,8 @@ unsigned long measure() {
 
   //return absdiff(s, e);
   asm volatile ("ldr	r4, .L17");
-  GET_LOW(s);
+  GET_HIGH(s);
   asm volatile ("ldr	r4, [r4]");
-  GET_LOW(e);
+  GET_HIGH(e);
   return absdiff(s,e);
 }

@@ -16,7 +16,7 @@ unsigned long measure() {
     printf("pipe created ");
     // execute experiment
     start = 0;
-    GET_LOW(start);
+    GET_HIGH(start);
     if (vfork()) { //parent
         /*
         printf("parent resumed ");
@@ -39,7 +39,7 @@ unsigned long measure() {
         close(pfd[0]);
 
     } else { // child
-        GET_LOW(end);
+        GET_HIGH(end);
         printf("child created ");
         //close read pipe
         close(pfd[0]);

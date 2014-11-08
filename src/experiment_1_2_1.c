@@ -6,7 +6,7 @@ void teardown(){}
 unsigned long i, o;
 
 void f0(int v1) {
-  GET_LOW(i);
+  GET_HIGH(i);
 }
 
 unsigned long measure () {
@@ -14,7 +14,7 @@ unsigned long measure () {
   i=0;
   o=0;
   int v1 = 1;
-  GET_LOW(o);
+  GET_HIGH(o);
   f0(v1);
   return absdiff(o, i);
 }

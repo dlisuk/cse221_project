@@ -46,9 +46,9 @@ unsigned long measure() {
   // load pointer to dyn data
   asm volatile("ldr	r4, .L21");   // address of dyn
   asm volatile("ldr	r4, [r4]");   // data in dyn, pointer
-  GET_LOW(start);
+  GET_HIGH(start);
   asm volatile("ldr	r4, [r4]");   // read *dyn
-  GET_LOW(end);
+  GET_HIGH(end);
 
   return absdiff(start,end);
 

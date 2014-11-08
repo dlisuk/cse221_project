@@ -29,7 +29,7 @@ void setup() {
 
       //wait for parent to send msg
       read(p2c[0], inmsg, 4);
-      GET_LOW(recv_time);
+      GET_HIGH(recv_time);
       //printf("msg %s recv at %d\n", inmsg, recv_time);
 
       //if parent indicates done, quit
@@ -70,7 +70,7 @@ unsigned long measure() {
   int v1 = c2p[0];
   char * v2 = (char*)&recv_time;
   int v3 = sizeof(unsigned long);
-  GET_LOW(block_time);
+  GET_HIGH(block_time);
   read(v1, v2, v3);
 
   return absdiff(block_time, recv_time);
