@@ -1,51 +1,73 @@
-In the fourth experiment, we wished to measure the time of task creation, both for ordinary processes and for kernel threads, and to compare them. Unfortunately, time did not permit for testing of kernel threads, but we were able to obtain measurements for task creation time for ordinary processes. This was accomplished using the method on the next page (note that the semantics of ``execute" are slightly different than in previous sections of this paper; instead of merely executing the actions under observation, relying on external variables for timing, the execute method took the measurements internally and returned the meaningful change in time to the running program):
-
-\newpage
+In the fourth experiment, we wished to measure the time of task creation, both for ordinary processes and for kernel threads, and to compare them. Since the last milestone, we have implemented code for testing kernel thread creation time (given below), but unfortunately, we have had difficulty with compiling kernel modules. 
+\newline
+\newline
+Ordinary process-creation time was measured through successive ``execv" calls. This method could not make use of the experimental framework described in the introduction to the experiments section, because the ``execv" call kills the calling process on success. Instead, we maintain state (trial number, time of exec call) through clever use of command line arguments, as shown below:
 
 \noindent \begin{verbatim}
-unsigned long execute() {
-  
-  // initialize pipes for interprocess communication
-  int pfd[2];
-  pipe(pfd);
+int main(int argc, char *argv[]) {
 
-  unsigned long t_start, t_end, ctime;
+  GET_HIGH(end);
 
-  t_start = ccnt_read(); //get time before fork
-  if(fork()) { // parent
-    t_end = ccnt_read();  // time of fork return
-    close(pfd[1]);  // only receiving messages from child; close output pipe
+  if(argc == 1) { // initial run, not a trial
+    newargs[0] = process_name;
+    newargs[1] = "1"; // trial number
+    newargs[2] = [allocate space for time measurement and null terminator]
+    newargs[3] = [NULL STRING];
 
-  else { //child
-    t_end = ccnt_read();
- 
-    // only sending messages to parent; close input pipe
-    close(pfd[0]);
-
-    // send time of process start
-    write(pfd[1], (char*)&t_end, sizeof(unsigned long));
-
-    // close pipe and exit
-    close(pfd[1]);
-    exit(0);
+    GET_HIGH(*(unsigned long *)newargs[2]); // lol
+    // run first trial
+    execv(process_name, newargs);
   }
 
-  // if child ran first, then update t_end
-  if(ctime < t_end) t_end = ctime;
-  
-  // account for looped clock (needs more robust handling in future)
-  if(t_end < t_start) t_end += 1000000000; // clock loops every billion ticks
+  // check current trial; if >= MAX_N, exit
+  trial = argv[1];
+  if(trial == MAX_N) exit(0);
 
-  return t_end - t_start;
+  // get passed time
+  start = argv[2];
+  fprintf(datafile, "%ul\n", end - start);
+
+  // set up next trial
+  newargs[0] = process_name;
+  newargs[1] = "[trial+1]";
+  newargs[2] = [allocate space for time measurement and null term]
+  newargs[3] = [NULL STRING];
+  GET_HIGH(*(unsigned long *)newargs[2]);
+  execv(process_name, newargs);
+
 }
 \end{verbatim}
 
 \newpage
 
-The idea behind this method is that the child process sends the time of its first instruction $-$ the acquisition of the time $-$ to the parent process. The parent process then calculates the difference between the time taken before the fork call and the time at which the child process began executing, and returns it.
+Each time the program is run, its command line arguments inform it of 1) whether it is running a trial and if so 2) which trial it is executing, and finally of 3) when the exec call that initiated it was made, so that it can calculate the time it took for it to be created.
+\newline
+\newline
+This time turns out to be quite large $-$ 3200000, with a standard deviation of 130000. 
+\newline
+\newline
+As for kernel threads, we can only speculate at this point, but we imagine that kernel threads will be faster to create, since enjoy higher priority. The code to test this is as follows (it had to be custom, and could not take advantage of the {\tt basic\_experiment} framework):
 
-After gathering the data, we found an unreasonably high mean time, due to unreasonably large outliers which are possibly caused by some overlooked cases below. Most times were in the range of 21000-24000ns, but some were as high as 100000000ns. Of 1000000 trials, 824856 were ``inliers", defined (admittedly ad-hoc) by being less than 50000ns. Of these inliers, the mean was much more representative: 26613ns.
+\begin{verbatim}
+int reply_with_time(void *data) {
+  GET_HIGH(recv_time);
+  write(c2p[1],"0", 1);
+  return 0;
+}
 
-In hindsight, the method above is not optimal for a number of reasons. First, our method for dealing with the ambiguity about which process, parent or child, assumes control of the processor after the ``fork" was not adequate. Particularly, if in one instance the parent assumes control after ``fork", we assumed that the child process had been created and was immediately ready to be scheduled. In fact, we could not find justification for this assumption online $-$ it may be the case that the child process may be incompletely created or scheduled. Fortunately, this does not seem to have been a significant factor in the accuracy of our results $-$ of 1000000 trials, the child process assumed control of the processor 924669 times. In the future, however, we will only record data from trials in which this is the case, and get rid of corrupting data from the other trials (in which the parent began executing, and therefore the time returned by the child did not accurately reflect the time of task creation). An easier solution might be to use ``vfork", which guarantees that the parent processor will not gain access to the CPU after spawning the child process.
+int exp_init() {
+  for(i = 0; i < MAX_N; ++i) {
+    reset();
+    kthread_create(&reply_with_time,0,"0");
+    read(c2p[0], &c, 1);
+    fprintf(datafile, "%ul\n", recv_time);
+  }
 
-Second, we should have explored a more holistic set of process-creation primitives, such as ``exec", ``vfork", and ``clone". It may turn out that ``fork" is not a good representative of process creation in general, although it may be the most invoked function for process creation.
+  return 0;
+}
+\end{verbatim}
+
+\noindent Here, the parent thread creates a child thread; reads from a pipe that the child writes to, in order to block as soon as possible; the child then records the time it began executing, and exits; and the parent resumes and records the time of receipt in the datafile. 
+\newline
+\newline
+While this method is less than ideal $-$ the parent may resume execution for a short time before blocking and allowing the child thread, which may have been created but not queued, to record its start time $-$ we could not find a way around this. It is possible that we could just take the time between the start and the end of the {\tt kthread\_create} call, but if the child started first, then this would become inaccurate. Perhaps taking the minimum of both measurements will yield a more accurate measurement of kernel thread creation time.
