@@ -1,21 +1,12 @@
-The first experiment we ran was to measure the amount of time that is caused by measuring time within our for loop.
-To do this want to do as little as possible while still doing everyting that will occur in all our future experiments.
+The first experiment measures the time take to take a measurement (whoa!).
 
 Thus we implement this experiment function: 
 \begin{verbatim}
-static inline unsigned long execute(){
-  return 0;
+unsigned long measure() {
+  GET_HIGH(start);
+  GET_HIGH(end);
+  return end - start;
 }
 \end{verbatim}
 
-Since we literally execute the timing function twice and call a function which instantly returns 0 we expect the code to take 8 clock cycles plus some overhead of the clock calling function.   We don't know the number of instructions in the clock calling function so we assume its on the order of 10 instructions.  Thus we expect about 30 clock cycles (assuming all instructions are one cycle) or 42 ns run time.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|}\hline
-Mean & 860 ns \\
-SD & 1 ns\\\hline
-\end{tabular}
-\end{table}
-
-We were significantly off from our measure.  We believe this is mostly due to bad clock measurement technique (which is being worked on).  We also got a lot of variance between runs.  We believe some processor features (out of order execution, frequency scaling, etc) are on that are interfering with measurements.  This will be investigated further.
+This time difference proves to be 11 cycles. This is the result obtained from every single trial.
