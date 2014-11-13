@@ -1,0 +1,8 @@
+To measure the page fault latency we generate a file containing 4mb of data from {\tt /dev/random}, since the page size is 4KB this corresponds to 1000 pages of data.  
+We then memory map this file and then measure the latency of reading the first byte of each page.  
+
+The rasberry pi has a class 10 SD card as its secondary storage device, which is not optimized for the random access typical in paging.  Most performance metrics cited only bandwidth rather than random read latency.  
+However, Tom's Hardware \cite{sdcard} performed a study and found read latency of about 1-2 ms.
+We thus suspect the about 1 million clock cycles per page fault.  
+
+Our experiment showed 2586 cycles per page fault with a standard deviation of 38 cycles.  This is several orders of magnitude faster than our expectation and thus indicates either some kind of cache optimization we are not accounting for or issues with timing.  We are investigating sources of error and have yet to identify the problem.
