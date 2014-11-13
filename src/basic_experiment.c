@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
   for(trial=0; trial < MAX_N; ++trial){
 
     delta_int = measure();
-    fprintf(results, "%d\n",delta_int);
+    fprintf(results, "%lu\n",delta_int);
     //measurements[i-1] = delta_int;
     //delta = delta_int;
 

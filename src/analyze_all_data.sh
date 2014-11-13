@@ -1,0 +1,14 @@
+./analyze_data.sh experiment_1_1_data 1000
+./analyze_data.sh experiment_1_2_0_data 1000
+./analyze_data.sh experiment_1_2_1_data 1000
+./analyze_data.sh experiment_1_2_2_data 1000
+./analyze_data.sh experiment_1_2_3_data 1000
+./analyze_data.sh experiment_1_2_4_data 1000
+./analyze_data.sh experiment_1_2_5_data 1000
+./analyze_data.sh experiment_1_2_6_data 1000
+./analyze_data.sh experiment_1_2_7_data 1000
+./analyze_data.sh experiment_1_2_ret_data 1000
+./analyze_data.sh experiment_1_3_data 1000
+./analyze_data.sh experiment_1_4_proc_data 1000
+./analyze_data.sh experiment_1_4_proc_exec_data 1000
+./analyze_data.sh experiment_1_5_proc_data 1000
