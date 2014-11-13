@@ -1,3 +1,4 @@
+echo -e "Exp\tn\tmean\tstd\tmin\tmax"
 ./analyze_data.sh experiment_1_1_data 1000
 ./analyze_data.sh experiment_1_2_0_data 1000
 ./analyze_data.sh experiment_1_2_1_data 1000

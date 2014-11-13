@@ -71,11 +71,9 @@ int main(int argc, char *argv[]) {
   // get start time
   GET_HIGH(et);
 
-  //printf("argc: %d\n", argc);
 
   if(argc == 1) {
     // first run; start first trial
-    //printf("beginning first run\n");
 
     newargs[PROG_ARG] = execname;
     // allocate memory for time
@@ -100,7 +98,6 @@ int main(int argc, char *argv[]) {
 
     // extract trial number from args
     trial = strtol(argv[TRIAL_ARG], err_ptr, 10);
-    printf("executing trial %d\n", trial);
 
     // if time is 4 bytes, write time difference to file
     if(strlen(argv[TIME_ARG]) == 4){

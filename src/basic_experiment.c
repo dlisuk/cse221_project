@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <errno.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +39,7 @@ int c(const void * p1, const void * p2) {
 */
 
 int main(int argc, char *argv[]){
+  reset();
   //mean_old, mean_new = 0.0;
   //var_old, var_new   = 0.0;
   //unsigned long * measurements = (unsigned long *)malloc(MAX_N*sizeof(unsigned long));
@@ -49,10 +51,14 @@ int main(int argc, char *argv[]){
   results = fopen(datafile, "w");
   setup();
   printf("RUNNING MEASURE %d TIMES\n\n", MAX_N);
-  GET_HIGH(outer_start);
   for(trial=0; trial < MAX_N; ++trial){
 
     delta_int = measure();
+    if(errno){
+      printf("Failed at trial %d\n", trial);
+      fclose(results);
+      exit(1);
+    }
     fprintf(results, "%lu\n",delta_int);
     //measurements[i-1] = delta_int;
     //delta = delta_int;
@@ -71,13 +77,10 @@ int main(int argc, char *argv[]){
     }
     */
   }
-  GET_HIGH(outer_end);
   teardown();
   printf("EXPERIMENT COMPLETE\n");
   //fprintf(results, "%d\n", outer_start.tv_nsec);
   //fprintf(results, "%d\n", outer_end.tv_nsec);
-  fprintf(results, "%d\n", outer_start);
-  fprintf(results, "%d\n", outer_end);
   /*
   printf("sorting\n");
   qsort(measurements, MAX_N, sizeof(unsigned long), &c);
