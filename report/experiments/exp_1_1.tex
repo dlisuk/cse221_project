@@ -1,6 +1,4 @@
-The first experiment measures the time take to take a measurement (whoa!).
-
-Thus we implement this experiment function: 
+The first experiment measures the time take to take a measurement (whoa!). This macro expands to three instructions, one of which is a write to memory at a location of our choice. Since memory accesses to L1 cache were measured to be 26 cycles, we expect exactly 2 more cycles for the remaining instructions, for a total of 28. We implement this experiment function: 
 \begin{verbatim}
 unsigned long measure() {
   GET_HIGH(start);
@@ -9,4 +7,4 @@ unsigned long measure() {
 }
 \end{verbatim}
 
-This time difference proves to be 11 cycles. This is the result obtained from every single trial.
+This time difference proves to be 11 cycles, with no deviation in any trial. The significant overestimate is probably due to coarse grained memory latency measurements, which might be measuring both read and write time. Dividing the memory latency in half (13 cycles) yields a much closer estimate of 15 cycles.

@@ -1,4 +1,4 @@
-In our final experiment, we were to measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. As with the last experiment, we were able to write code for testing kernel thread context switches, but unable to compile or run it. We will present code for both experiments, but we present data only for ordinary process context switches.
+In this experiment, we measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. As with the last experiment, we were able to write code for testing kernel thread context switches, but unable to compile or run it. We will present code for both experiments, but we present data only for ordinary process context switches.
 \newline
 \newline
 We induced context switches using the following method:
@@ -33,7 +33,7 @@ while(1) {
 \noindent This method is fairly reliable. Immediately after the parent calls ``read", the parent blocks, since there is no way the child has received the message yet on this uniprocessor machine (assuming no context switch occurred between the sending and the read call). This frees the CPU for the child process, which receives the message and immediately records its time. The only overhead comes from the child executing the ``read" call. Assuming there are no other processes scheduled (which we took pains to ensure), this time difference is exactly one context switch.
 \newline
 \newline
-The average time between the message is sent from the parent and received by the child is 25000 cycles, with a standard deviation of 5400. Given that the system call to {\tt read} produces an overhead, which was measured to be 2100 (std. dev. 165), we get an overall time of 22900, +- 5400.
+The average time between the message is sent from the parent and received by the child is 25000 cycles, with a standard deviation of 5400. Given that the system call to {\tt read} produces an overhead, which was measured to be 2100 (std. dev. 165), we get an overall time of 22900, +- 5400. In the future, we may wish to profile calls to {\tt read} and {\tt write} on pipes to derive more accurate overhead measurements.
 
 \newpage
 
