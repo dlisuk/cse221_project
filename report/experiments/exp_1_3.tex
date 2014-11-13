@@ -1,25 +1,28 @@
 The third experiment we ran was to measure the amount of time taken by making an operating system call.
 To do this we wish to execute a call which will do very little without being cached.  
-We decided to use the {\tt chmod} system call to try and change the permissions of the {\tt /etc/passwd} file.
-Since we are not running in super user mode this this will be denied quickly and will be checked every time.
+We decided to use the {\tt getcpu} system call.
 
-Thus we implement this experiment function: 
+We implement this experiment as follows: 
 \begin{verbatim}
-static inline unsigned long execute(){
+unsigned long measure(){
   int rc;
-  rc = syscall(SYS_chmod, "/etc/passwd", 0444);
-  return rc;
+  GET_HIGH(start);
+  rc = syscall(SYS_getcpu);
+  GET_HIGH(end);
+  return end - start;
 }
 \end{verbatim}
 
-We expect this to be an order of magnitude larger than the basic overhead measure (which we got ~800 ns for) since we have to switch to the OS, do some work, and then switch back to our user program.  Thus we predict about 8,000 ns for this test
+We expect this to be about two orders of magnitude larger than the basic overhead measure since we have to switch to the OS, do some work, and then switch back to our user program.  We take the sum of the procedure call overhead for a single argument and the overhead for returning from a function, and multiply by 100, to get $(19+16) \times 100 = 2500$ cycles.
+
+The results of the experiment are"
 
 \begin{table}[h]
 \centering
 \begin{tabular}{|c|c|}\hline
-Mean & 9077 ns \\
-SD & 4 ns\\\hline
+Mean & 2111 cycles \\
+SD & 165 cycles\\\hline
 \end{tabular}
 \end{table}
 
-We were quite a bit closer to our predicted measure than earlier experiments.  This is possibly due to a forced serialization of execution caused by the OS switching and by the clock measurement error being dominated by the more major tasks.
+This is roughly what we predicted, though we were off by about 3 standard deviations.

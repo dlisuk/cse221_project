@@ -32,12 +32,38 @@ unsigned long measure() {
 }
 \end{verbatim}
 
-The overhead for a function call is plotted on the graph below.
+\newpage
 
+\noindent The overhead for a function call is plotted in the table below:
+\newline
+\newline
+\begin{tabular}{c|c|c}
+
+	\textbf{Parameters} & \textbf{Overhead (cycles)} & \textbf{St. Dev.} \\\hline
+	0 & 16 & 0\\\hline
+	1 & 19 & 0\\\hline
+	2 & 24.004 & 0.33\\\hline
+	3 & 23 & 0\\\hline
+	4 & 28.002 & 0.11\\\hline
+	5 & 32 & 0\\\hline
+	6 & 33 & 0\\\hline
+	7 & 37 & 0\\\hline
+
+\end{tabular}
+\newline
+\newline
+
+\begin{comment}
 \begin{figure}[h]
 \centering
 \includegraphics[scale=.5]{experiments/exp_1_2_fig.png}
 \caption{Mean execution time vs number of parameters.  Overhead time included for comparison.  The standard deviation for all experiments was under 1 ns}
 \end{figure}
+\end{comment}
 
-There was a ~15 cycle overhead for procedure calls over the do nothing overhead.  Thus we were pretty close in our expected additional overhead for procedure calls.  There is also a strong linear relationship between number of procedure arguments and the time taken.  By performing a linear regression we get 4.2 ns additional cost per argument or about 3  additional cycles per parameter.
+\noindent The overhead for returning from a function call was consistently 16 cycles for each trial in the experiment. In the future, we should compare this with the overhead for actually returning a value from the function.
+\newline
+\newline
+\begin{comment}
+There was a 16 cycle overhead for procedure calls over the do nothing overhead.  Thus we were pretty close in our expected additional overhead for procedure calls.  There is also a strong linear relationship between number of procedure arguments and the time taken.  By performing a linear regression we get 4.2 ns additional cost per argument or about 3  additional cycles per parameter. 
+\end{comment}
