@@ -1,19 +1,38 @@
-The next experiment we ran was to measure the amount of time it takes to run a procedure of 0-7 integer parameters and 1 returned integer.
+The next experiment we ran was to measure the amount of time it takes to run a procedure of 0-7 integer parameters. In addition, we measured the overhead for returning from a function call. 
 
-Thus we implement experiment functions of this form: 
+Thus we implement each experiment as follows: 
 \begin{verbatim}
-unsigned function(unsigned x_1, unsigned x_2){
-  return 0;
+void function(int v1, int v2, ... int vn){
+  GET_HIGH(end);
 }
 
-static inline unsigned long execute(){
-  return function(1, 2);
+unsigned long measure(){
+  int v1 = 1;
+  int v2 = 2;
+  ...
+  int vn = n;
+  GET_HIGH(start);
+  function(v1,v2, ... vn);
+  return end - start;
 }
 \end{verbatim}
 
-To execute the procedure we have to load the arguments to registers, add the return pointer to the stack and then move the instruction pointer twice(there/back).
-We suspect there are about 10 instructions per procedure call with 2 additional per parameter.  Most of these instructions deal with memory and thus will take a couple cycles each.  Thus we suspect about 20 cycles + 6 cycles per parameter.
+Note that, for standardization purposes, arguments are loaded into variables and passed to the function through these variables. This way, we know that the data is local, in cache and in the TLB, and computing the values to be passed to the function takes the same amount of time. This method is used in later experiments, where procedure call overhead affects the measurement, and must be subtracted.
 
+We implement the return overhead experiment as follows:
+\begin{verbatim}
+void function() {
+  GET_HIGH(start);
+}
+
+unsigned long measure() {
+  function();
+  GET_HIGH(end);
+  return end - start;
+}
+\end{verbatim}
+
+The overhead for a function call is plotted on the graph below.
 
 \begin{figure}[h]
 \centering
