@@ -1,46 +1,42 @@
-
 We developed a general wrapper program which calls an experiment specific inlined function.
-This allows all of our experiments to share the number of running times, the statistic computation code and other things.
+This allows many of our experiments to share the number of running times, the statistic computation code and other things.
 The basic code is shown below.
 
 \begin{verbatim}
-static inline unsigned long execute();
+void setup();
+void teardown();
+unsigned long measure();
 
 int main(void){
-  int i;
-  for(i=1; i <= MAX_N; i++){
-    unsigned long t_start = ccnt_read();
-    execute();
-    unsigned long t_end = ccnt_read();
-    //update mean/var
-    ...
+  int trial;
+  unsigned int delta; // measurement
+
+  df = fopen(exp_file_data_name, "w");
+
+  setup(); // initialize environment for experiment
+  for(trial = 0; trial < MAX_N; ++trial) {
+    delta = measure();
+    fprintf(df, "%ul\n", delta);
   }
-  //report mean/var
+  teardown();
+  fclose(df);
 }
 \end{verbatim}
 
+\noindent The {\tt setup}, {\tt teardown}, and {\tt measure} functions are implemented separately for each experiment. {\tt setup} sets up the environment necessary to run the experiment, and {\tt teardown} handles any cleaning up that needs to be done afterwards. {\tt measure} returns the measurement for each trial. We will give approximate c code for each of these experiments, but some details may be missing. We will include full code for each experiment in our final report.
+\newline
+\newline
+Not all of the experiments were able to make use of this framework. We will explicitly identify which experiments these were in the report. Unless otherwise stated, assume that an experiment made use of this framework. Also, for those experiments that did use this framework, not all needed to implement the {\tt setup} and {\tt teardown} methods. Pseudocode for these will only be given when the experiment needed these.
+\newline
+\newline
+Each datapoint is collected and written to an output file for offline processing.
+
 \subsubsection{Computing Results}
 
-We run each test 1 million times and report mean/standard deviation.
-
-We utilize a streaming mean/variance algorithm popularized by Knuth\ref{meanvar}:
-
-$$\bar x_n = \frac{(n-1) \, \bar x_{n-1} + x_n}{n} = \bar x_{n-1} + \frac{x_n - \bar x_{n-1}}{n} \!$$
-$$s^2_n = \frac{(n-2)}{(n-1)} \, s^2_{n-1} + \frac{(x_n - \bar x_{n-1})^2}{n}, \quad n>1 $$
-
-This prevents us from having to store or download a large number of data points for analysis.  We simply store 4 numbers which are likely to fit in registers.
-
-We currently don't remove any overhead measures as we don't currently trust our data.
+\noindent We run each test 4978 times and report mean/standard deviation. We first take 5000 measurements, but then exclude the first 2 trials, as well as the highest 20 datapoints, before calculating the mean and variance. This is done to exclude inaccurate data collected as the experiment ``warms up" (ie, loads relevant pages into memory, code and data into L1 cache, etc.), as well as gross outliers from context switches and other uncontrollable interferences.
 
 \subsubsection{Getting Time}
-We are currently using the {\tt clock\_gettime} c function to get the current nano time stamp.
-We are not sure if this is the fastest way but it seems the rdtsc instruction's equivalent on arm requires privileged mode by default.
-We are working on a linux kernel mod that will allow us to utilize this to improve results in the future.
-
-The assembly code for the time getting function has 9 instructions, 4 before the get time call and 4 after.  
-
-There are often discrepancies in reported time between runs.  We believe this is due to variation in server load.  
-We run each experiment program several times and report the mean/standard deviation for the run corresponding to the smallest mean.  We believe this makes sense since we aim to measure ideal performance rather than loaded performance.  
+All time measurements in this report are in terms of cycles. Each cycle takes approximately 1.4 ns. We used two macros, {\tt reset} and {\tt GET\_HIGH}, to reset and read the cycle counter into a variable, respectively.
 
 \subsubsection{Compilation}
 We use gcc version 4.8.3 with the flag -O0 to prevent optimization.

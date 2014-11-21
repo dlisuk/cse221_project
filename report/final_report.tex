@@ -5,6 +5,7 @@
 \bibliography{bib.bib}
 \usepackage{graphicx}
 \usepackage{fancyhdr}
+\usepackage{comment}
 \pagestyle{fancyplain}
 \fancyhead{}											% No page header
 \fancyfoot[L]{}											% Empty 
@@ -23,19 +24,55 @@
 \section{Introduction}
 \input{Introduction.tex}
 \section{Machine Description}
+
 \input{machine_description}
+
 \newpage
+
 \section{Experiments}
 \input{experiments/intro}
+
+\newpage
+
 \subsection{CPU, Scheduling, and OS Services}
 \subsubsection{Measurement Overhead}\input{experiments/exp_1_1}
-\newpage
+
+%\newpage
+
 \subsubsection{Procedure Call Overhead}\input{experiments/exp_1_2}
+
+\newpage
+
 \subsubsection{System Call Overhead}\input{experiments/exp_1_3}
+
+\newpage
+
 \subsubsection{Task Creation Time}\input{experiments/exp_1_4}
+
+\newpage
+
 \subsubsection{Context Switch Time}\input{experiments/exp_1_5}
 
 \newpage
+
+\subsection{Memory}
+
+\subsubsection{Latency}\input{experiments/exp_2_1}
+
+\newpage
+
+\subsubsection{Bandwidth}\input{experiments/exp_2_2}
+
+\newpage
+
+\subsubsection{Page Fault}\input{experiments/exp_2_3}
+
+\newpage
+
+\subsubsection{Miscellaneous: TLB miss}\input{experiments/exp_2_misc.tex}
+
+\newpage
+
 \printbibliography
 
 \end{document}

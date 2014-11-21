@@ -1,22 +1,19 @@
-In our final experiment, we were to measure the time taken for a context switch to occur. As before, time did not permit us to extend this investigation to kernel-thread context switches, so we present data only for ordinary process context switches.
-
-We induced context switches using the following method (again, note that ``execute" performs the time measurement within itself, rather than relying on external measurement before and after the function).
-\newpage
+In this experiment, we measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. As with the last experiment, we were able to write code for testing kernel thread context switches, but unable to compile or run it. We will present code for both experiments, but we present data only for ordinary process context switches.
+\newline
+\newline
+We induced context switches using the following method:
 
 \noindent \begin{verbatim}
 unsigned long measure() {
 
-  unsigned long block_time, recv_time;
+  unsigned long recv_time;
 
-  write(p2c[1], "1234", 4); // send some dummy data to earlier-spawned child process
-  // read blocks parent process, waits for child process to respond with its time of receipt
-  block_time = ccnt_read();
+  write(p2c[1], "0", 1); // send dummy data to child process
+  // read blocks parent, waits for child to respond with receipt time
+  reset();
   read(c2p[0], (char*)&recv_time, sizeof(unsigned long)); 
   
-  //handle clock overflow
-  if(recv_time < block_time) recv_time += 1000000000;
-
-  return recv_time - block_time;
+  return recv_time;
 }
 \end{verbatim}
 
@@ -25,21 +22,46 @@ unsigned long measure() {
 \noindent \begin{verbatim}
 while(1) {
 
-  read(p2c[0], inmsg, 4);
-  recv_time = ccnt_read();
-
-  if(!strcmp(inmsg, "done")) {
-    close(p2c[0]);
-    close(c2p[1]);
-    exit(0);
-  }
+  read(p2c[0], &inmsg, 1);
+  GET_HIGH(recv_time);
   
   // send time of receipt
   write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
 }
 \end{verbatim}
 
-This method is fairly reliable. Immediately after the parent calls ``read", the parent blocks, since there is no way the child has received the message yet on this uniprocessor machine (assuming no context switch occurred between the sending and the read call). This frees the CPU for the child process, which receives the message and immediately records its time. The only overhead comes from the child executing the ``read" call. Assuming there are no other processes scheduled (which we took pains to ensure), this time difference is exactly one context switch.
+\noindent This method is fairly reliable. Immediately after the parent calls ``read", the parent blocks, since there is no way the child has received the message yet on this uniprocessor machine (assuming no context switch occurred between the sending and the read call). This frees the CPU for the child process, which receives the message and immediately records its time. The only overhead comes from the child executing the ``read" call. Assuming there are no other processes scheduled (which we took pains to ensure), this time difference is exactly one context switch.
+\newline
+\newline
+The average time between the message is sent from the parent and received by the child is 25000 cycles, with a standard deviation of 5400. Given that the system call to {\tt read} produces an overhead, which was measured to be 2100 (std. dev. 165), we get an overall time of 22900, +- 5400. In the future, we may wish to profile calls to {\tt read} and {\tt write} on pipes to derive more accurate overhead measurements.
 
-The average time between the message is sent from the parent and received by the child is 21247ns, after excluding about ~100 outliers (defined as times exceeding 100000ns). Given that the overhead is the time for a system call, which was measured to be 9077ns, to get a value of 12170 for the context switch time.
+\newpage
 
+\noindent As for kernel threads, we use a similar technique (again though, the kernel thread experiments could not make use of the {\tt basic\_experiment} framework, since they had to be implemented as kernel modules);
+
+\begin{verbatim}
+int exp_init() {
+  //init communication pipes
+  pipe(p2c);
+  pipe(c2p);
+
+  ts = kthread_create(&reply_with_time,0,"0");
+  
+  for(int i = 0; i<MAX_N; ++i) {
+    reset();
+    write(p2c[1],"1",1);
+    read(c2p[0],&in,1);
+    fprintf(datafile, "%ul\n", recv_time); // set by child
+  }
+}
+
+int reply_with_time(void *data) {
+  while(1) {
+    read(p2c[0], &in, 1);
+    GET_HIGH(recv_time);
+    write(c2p[1],"1",1);
+  }
+}
+\end{verbatim}
+
+\noindent As stated before, we were unable to get results for this experiment yet, due to problems compiling and running these tests.
