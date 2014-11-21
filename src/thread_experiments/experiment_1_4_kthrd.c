@@ -37,7 +37,11 @@ int exp_init() {
 
   int i;
   for(i = 0; i< MAX_N; ++i) {
-    ts = kthread_create(&reply_with_time,0,"0");
+    int (*f)(void *) = &reply_with_time;
+    void * data =0;
+    char * z = "0";
+    reset();
+    ts = kthread_create(f,data,z);
     read(c2p[0], &derp, 1);
     fprintf(dp, "%ul\n", recv_time);
   }

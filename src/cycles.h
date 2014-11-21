@@ -16,12 +16,14 @@
 
 inline void reset(){ 
 	unsigned flags = ARMV6_PMCR_ENABLE |ARMV6_PMCR_CCOUNT_RESET |ARMV6_PMCR_CCOUNT_DIV | ARMV6_PMCR_CTR01_RESET | (ARMV6_EVENT_CPU_CYCLES << ARMV6_PMCR_EVT_COUNT0_SHIFT);
+	asm volatile("FMSTAT");
 	asm volatile("mcr   p15, 0, %0, c15, c12, 1" : : "r"(0));
         asm volatile("mcr   p15, 0, %0, c15, c12, 0" : : "r"(flags));
+	asm volatile("FMSTAT");
 }
 
-#define GET_HIGH(value) asm volatile("mrc   p15, 0, %0, c15, c12, 2" : "=r"(value));
-#define GET_LOW(value) asm volatile("mrc   p15, 0, %0, c15, c12, 1" : "=r"(value));
+#define GET_HIGH(value) asm volatile("FMSTAT");asm volatile("mrc   p15, 0, %0, c15, c12, 2" : "=r"(value));asm volatile("FMSTAT");
+#define GET_LOW(value) asm volatile("FMSTAT");asm volatile("mrc   p15, 0, %0, c15, c12, 1" : "=r"(value));asm volatile("FMSTAT");
 
 unsigned long absdiff(unsigned long s, unsigned long e) {
   //for now, don't worry about overflow correction
