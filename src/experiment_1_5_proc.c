@@ -2,7 +2,7 @@
 
 int p2c[2];
 int c2p[2];
-int pid;
+//int pid;
 unsigned long v1, v2;
 
 void setup() {
@@ -13,8 +13,7 @@ void setup() {
   pipe(c2p);
 
   // fork processes
-  pid = fork();
-  if(!pid) { //child reads and returns msgs forever
+  if(!fork()) { //child reads and returns msgs forever
 
     char inmsg;
     unsigned long recv_time;
@@ -29,7 +28,6 @@ void setup() {
       //wait for parent to send msg
       read(p2c[0], &inmsg, 1);
       GET_HIGH(recv_time);
-      //printf("msg %s recv at %d\n", inmsg, recv_time);
 
       //if parent indicates done, quit
       if(inmsg == 'd') {
@@ -70,7 +68,7 @@ unsigned long measure() {
   char * v2 = (char*)&recv_time;
   int v3 = sizeof(unsigned long);
   //GET_HIGH(block_time);
-  reset();
+  RESET;
   read(v1, v2, v3);
 
   //return block_time;

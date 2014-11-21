@@ -3,17 +3,10 @@
 #include <linux/kernel.h>
 #include "constants.h"
 
-/*
-typedef struct phone_struct {
-  int[2] p;
-} phone;
-phone p;
-*/
-
 FILE * dp;
 typdef struct task_struct ts;
 ts cur_task;
-unsigned long recv_time;
+unsigned long p_recv_time, c_recv_time;
 int[2] p2c;
 int[2] c2p;
 char * filename = "experiment_1_4_kthrd_data";
@@ -21,7 +14,7 @@ char derp;
 
 
 int reply_with_time(void *watev) {
-  GET_HIGH(recv_time);
+  GET_HIGH(c_recv_time);
   write(c2p[1], "0", 1);
   return 0;
 }
@@ -40,8 +33,10 @@ int exp_init() {
     int (*f)(void *) = &reply_with_time;
     void * data =0;
     char * z = "0";
-    reset();
-    ts = kthread_create(f,data,z);
+    RESET;
+    //ts = kthread_create(f,data,z);
+    kthread_create(f,data,z);
+    GET_HIGH(p_recv_time);
     read(c2p[0], &derp, 1);
     fprintf(dp, "%ul\n", recv_time);
   }

@@ -4,7 +4,8 @@ char tlb[(TLB_ENTRIES+2)*PAGE_SIZE];
 char * dyn = 0;
 char * start_page;
 int alttag;
-unsigned long start, end;
+//unsigned long start, end;
+unsigned long t;
 
 void setup() {
 
@@ -40,16 +41,15 @@ unsigned long measure() {
     s+=PAGE_SIZE;
   }
 
-  // make sure start, end in cache
-  start = 0;
-  end = 0;
+  // make sure time variable in cache
+  t = 0;
   // load pointer to dyn data
   asm volatile("ldr	r4, .L22");   // address of dyn
   asm volatile("ldr	r4, [r4]");   // data in dyn, pointer
-  GET_HIGH(start);
+  RESET;
   asm volatile("ldr	r4, [r4]");   // read *dyn
-  GET_HIGH(end);
+  GET_HIGH(t);
 
-  return absdiff(start,end);
+  return t;
 
 }

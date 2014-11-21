@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 		double var_old, var_new   = 0.0;
 		for(j = 0; j< 1000; j++){
 			for(k = 0; k < n; k+=32){
-				reset();
+				RESET;
 				x = data[k];
 				GET_HIGH(delta);
 				if( j<5 ){

@@ -18,11 +18,13 @@ unsigned long measure() {
 
   // where is v?
   v = 0;
+  // also e
+  e = 0;
 
   //return absdiff(s, e);
   asm volatile ("ldr	r4, .L18");
-  GET_HIGH(s);
+  RESET;
   asm volatile ("ldr	r4, [r4]");
   GET_HIGH(e);
-  return absdiff(s,e);
+  return e;
 }

@@ -39,7 +39,7 @@ int c(const void * p1, const void * p2) {
 */
 
 int main(int argc, char *argv[]){
-  reset();
+  RESET;
   //mean_old, mean_new = 0.0;
   //var_old, var_new   = 0.0;
   //unsigned long * measurements = (unsigned long *)malloc(MAX_N*sizeof(unsigned long));

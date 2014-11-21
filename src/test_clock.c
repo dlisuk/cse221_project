@@ -6,7 +6,7 @@ int main() {
         unsigned long value_l = 0;
         unsigned long value_h = 0;
 
-	reset();
+	RESET;
         for(i = 1; i < 10; i++){
                 GET_LOW(value_l);
                 GET_HIGH(value_h);

@@ -36,7 +36,7 @@ int main(int argc, char *argv[]){
 	double mean_old, mean_new = 0.0;
 	double var_old, var_new   = 0.0;
 	for (i = 0; i < size; i += 4096*1024 ){
-		reset();
+		RESET;
 		x += data[i];
 		GET_HIGH(delta);
 		if( i == 0){
