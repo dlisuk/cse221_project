@@ -3,16 +3,18 @@
 void setup() {}
 void teardown() {}
 
-unsigned long inside_time, outside_time;
+unsigned long outside_time;
 
-void f0() {
-  inside_time = 0;
+int f0() {
+  int rv;
   outside_time = 0;
-  GET_HIGH(inside_time);
+  rv = 0;
+  RESET;
+  return rv;
 }
 
 unsigned long measure () {
   f0();
   GET_HIGH(outside_time);
-  return absdiff(inside_time, outside_time);
+  return outside_time;
 }

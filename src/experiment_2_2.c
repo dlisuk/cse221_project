@@ -8,7 +8,7 @@
 int main(int argc, char *argv[]){
 	double mean_old, mean_new = 0.0;
 	double var_old, var_new   = 0.0;
-	int * data = malloc(16777216 * sizeof(int));
+	char * data = malloc(16777216 * sizeof(char));
 	unsigned int i;
 	unsigned long delta;
 	int n = 1;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	results = fopen(datafile, "w");
 
 	//Write test
-	reset();
+	RESET;
 	for (i = 0; i < 16777216 - 15; i+=16){
 		data[i] = 1;
 		data[i+1] = 1;
@@ -45,10 +45,10 @@ int main(int argc, char *argv[]){
 		data[i+15] = 1;
 	}
 	GET_HIGH(delta);
-	fprintf(results, "write\t%d\t%d\t%f\n", delta, 4*(i+16), 4*(i+16.0)/delta);
+	fprintf(results, "write\t%d\t%d\t%f\n", delta, (i+16), (i+16.0)/delta);
 	
 	unsigned long x = 0;
-	reset();
+	RESET;
 	for (i = 0; i < 16777216 - 15; i+=16){
 		x = data[i];
 		x = data[i+1];
@@ -68,5 +68,5 @@ int main(int argc, char *argv[]){
 		x = data[i+15];
 	}
 	GET_HIGH(delta);
-	fprintf(results, "read\t%d\t%d\t%f\t%ul\n", delta, 4*(i+16), 4*(i+16.0)/delta, x);
+	fprintf(results, "read\t%d\t%d\t%f\t%ul\n", delta, (i+16), (i+16.0)/delta, x);
 }

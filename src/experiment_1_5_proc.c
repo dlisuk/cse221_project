@@ -2,7 +2,7 @@
 
 int p2c[2];
 int c2p[2];
-int pid;
+//int pid;
 unsigned long v1, v2;
 
 void setup() {
@@ -13,11 +13,9 @@ void setup() {
   pipe(c2p);
 
   // fork processes
-  pid = fork();
-  if(!pid) { //child reads and returns msgs forever
+  if(!fork()) { //child reads and returns msgs forever
 
-    char inmsg[5];
-    inmsg[4]='\0';
+    char inmsg;
     unsigned long recv_time;
 
     // for parent to child, close write descriptor
@@ -28,19 +26,18 @@ void setup() {
     while(1) {
 
       //wait for parent to send msg
-      read(p2c[0], inmsg, 4);
-      reset();
-      //printf("msg %s recv at %d\n", inmsg, recv_time);
+      read(p2c[0], &inmsg, 1);
+      GET_HIGH(recv_time);
 
       //if parent indicates done, quit
-      if(!strcmp(inmsg, "done")) {
+      if(inmsg == 'd') {
         close(p2c[0]);
         close(c2p[1]);
         exit(0);
       }
 
       //else write time of msg reciept
-      if(!strcmp(inmsg, "8==D")) {
+      if(inmsg == '0') {
       	write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
       }
     }
@@ -54,24 +51,26 @@ void setup() {
 }
 
 void teardown() {
-  write(p2c[1], "done", 4);
+  write(p2c[1], "d", 1);
   close(c2p[0]);
   close(p2c[1]);
 }
 
 unsigned long measure() {
 
-  unsigned long block_time;
+  //unsigned long block_time;
   unsigned long recv_time;
   //send message to child
-  write(p2c[1], "8==D", 4);
+  write(p2c[1], "0", 1);
   //wait for child response
-  block_time = 0;
+  //block_time = 0;
   int v1 = c2p[0];
   char * v2 = (char*)&recv_time;
   int v3 = sizeof(unsigned long);
-  GET_HIGH(block_time);
+  //GET_HIGH(block_time);
+  RESET;
   read(v1, v2, v3);
 
-  return block_time;
+  //return block_time;
+  return recv_time;
 }

@@ -3,17 +3,15 @@
 void setup() {}
 void teardown(){}
 
-unsigned long i, o;
+unsigned long t;
 
 void f0() {
-  GET_HIGH(i);
+  GET_HIGH(t);
 }
 
 unsigned long measure () {
-  // make sure i, o in cache and TLB
-  i=0;
-  o=0;
-  GET_HIGH(o);
+  t = 0;
+  RESET;
   f0();
-  return absdiff(o, i);
+  return t;
 }

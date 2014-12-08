@@ -42,7 +42,7 @@ int exp_init() {
 
   int i;
   for(i = 0; i< MAX_N; ++i) {
-    reset();
+    RESET;
     write(p2c[1],"1",1);
     read(c2p[0],&derp,1);
     fprintf(dp,"%ul\n",recv_time);

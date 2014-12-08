@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 	results = fopen(datafile, "w");
 
 	int i; 
-	char x;
+	int x;
 	unsigned long delta;
 	int n = 1;
 	int count;
@@ -35,9 +35,9 @@ int main(int argc, char *argv[]){
 	//Loop on mem size
 	double mean_old, mean_new = 0.0;
 	double var_old, var_new   = 0.0;
-	for (i = 0; i < size; i += 4096 ){
-		reset();
-		x = data[i];
+	for (i = 0; i < size; i += 4096*1024 ){
+		RESET;
+		x += data[i];
 		GET_HIGH(delta);
 		if( i == 0){
 			count = 1;
@@ -52,5 +52,6 @@ int main(int argc, char *argv[]){
 		}
 	}
 	var_new = sqrt(var_new/count);
+	printf("%d\n",x);
 	fprintf(results, "%d\t%d\t%g\t%g\n",i,count,mean_new,var_new);
 }

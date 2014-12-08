@@ -8,15 +8,12 @@ void teardown() {}
 
 unsigned long measure(){
   //int rc;
-  unsigned long s, e;
-  s=0;
-  e=0;
+  unsigned long t;
+  t=0;
   long v1 = SYS_getcpu;
-  char * v2 = "/etc/passwd";
-  int v3 = 0444;
-  GET_HIGH(s);
-  syscall(v1, v2, v3);
-  GET_HIGH(e);
+  RESET;
+  syscall(v1);
+  GET_HIGH(t);
   errno = 0;
-  return absdiff(s, e);
+  return t;
 }
