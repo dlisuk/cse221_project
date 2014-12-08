@@ -1,0 +1,59 @@
+We decided that, in addition to the previous experiments, it was necessary to measure the time taken to service a TLB miss. This is important because during the memory measurement experiments, the set of experiments reading short stretches of data will consistently hit the TLB, whereas eventually, reading longer stretches consistently misses it. While our memory experiments currently do not take these behaviors into considerations, we will incorporate them into future experimental analysis.
+\newline
+\newline
+Unfortunately, the TLB is fairly complicated on this architecture; there is a microTLB for data, as well as one for instructions, and a main TLB. Together, these contain about 80 mapping entries. For simplicity, we measured a complete TLB miss $-$ a miss on both the microTLB and the main TLB.
+\newline
+\newline
+To do this, wrote one experiment which simply read the same variable over and over into a register. This one is guaranteed to hit the TLB and the data in the L1 cache. The trick is, how do we read data from L1 cache while missing the TLB? Our solution was to read different pages from memory until the TLB was flushed, but to make sure the page offset of the address read on each page had a different cache line tag than the variable we wanted to measure. This way, we would be sure to avoid evicting the variable from cache. After flushing the TLB, we read the variable of interest, (hopefully) missing the TLB entirely, but hitting the L1 cache. Taking the difference of these measurements should give us the TLB miss time.
+\newline
+\newline
+Below is the code for the TLB hit experiment:
+\begin{verbatim}
+unsigned long measure() {
+  // make sure v in cache
+  v = 0;
+
+  // load v's label into r4
+  asm volatile("ldr r4, .L18");
+  GET_HIGH(start);
+  //load v's data into r4
+  asm volatile("ldr r4, [r4]");
+  GET_HIGH(end);
+  return end - start;
+}
+\end{verbatim}
+
+\newpage
+
+\noindent Now, the code for the TLB miss experiment:
+\begin{verbatim}
+unsigned long measure() {
+  //dyn is allocated on the heap
+  //guaranteed to be on different page than tlb variable
+  //load *dyn into cache
+  *dyn = 0;
+
+  //flush tlb, keep dyn in cache
+  //alttag is a page offset with a different cache-line-
+  //tag than *dyn
+  char *s = start_page + alttag;
+  for(int i = 0; i < TLB_ENTRIES; ++i) {
+    // put *s's page in TLB
+    *s = *s;
+    s+=PAGE_SIZE;
+  }
+
+  //load dyn's label into r4
+  asm volatile("ldr r4, .L22");
+  //load dyn data into r4
+  asm volatile("ldr r4, [r4]");
+  GET_HIGH(start);
+  //load *dyn data into r4
+  asm volatile("ldr r4, [r4]");
+  GET_HIGH(end);
+
+  return end - start;
+}
+\end{verbatim}
+
+\noindent The results are as follows: Hitting the TLB incurs 14 cycles; missing it appears to incur 96.8 cycles, with a standard deviation of 28 cycles. The latter measurement is certainly inaccurate. The most frequent cycle counts were 22 and 107. 107 probably represents a complete TLB miss, whereas 22 probably represents a microTLB miss and a main TLB hit. Because we are not able to control whether a page entry is loaded into the microTLB or the main TLB, this is not really the fault of our experiment, and we can safely assume that a memory read after a complete TLB miss takes 107 cycles. 
