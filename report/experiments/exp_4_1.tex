@@ -1,0 +1,31 @@
+Our first file system experiment is to measure the size of the file cache.
+To perform this experiment we loop through $n$ from 512 bytes to 250 MB.
+Each file size we create the file and write $n$ bytes to it.
+
+We then open the file, measure the time to read all file system blocks of the file and then seek back to the beginning of the file and measure the time to reread.
+We repeat these each experiment 100 times and report the mean/min/max for the first read and second read.
+Since we are using the direct file system interface, there will be no caching across file opens so we expect each iteration of the test to have similar performance.
+Within a test, the first read should take longer than the second read since the file isn't cached.
+On the second read, the read data will still be in the system's cache if it can fit so it should be substatnially faster up to a certain $n$.
+We know the file system cache is the size of the largets $n$ which has a substantial decrease in time between t1 and t2.
+
+{\tt
+  create file and write n bytes to it
+  file = open
+  RESET_TIMER
+  while( not end of file )
+    read block
+  t1 = ELAPSED_TIME
+  
+  seek to start of file
+  RESET_TIMER
+  while( not end of file )
+    read block
+  t2 = ELAPSED_TIME    
+  close file
+}
+
+The free command reports a total memory of 437M with 300M total used and 26M used minus buffers and cache.
+Thus we have about 275M of cache total.
+We assume that the usable file system cache should be on the order of 200M total since some of the cahce will be utilized by other processes.
+

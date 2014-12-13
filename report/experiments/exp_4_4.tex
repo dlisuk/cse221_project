@@ -1,0 +1,10 @@
+For the final io experiment, 1024 files of size 65kb were created.  
+The master process forks of $n$ sub processes which each randomly choose files to open, read all the way through, and then close.
+The child processes keep doing the same thing until they are killed by the master process.
+After launching the child processs, the master process reads through all 1024 files in order and randomly samples 100 blocks to measure the performance of as we did in previous file system processes.
+We report the mean min and max performance by number of processes.
+
+Since the system is single core, very little ram, and uses an SD card which is not designed for simultaneous accesses, we believe contention will have a great impact on performance of read times.
+Our prediction is that there will be a strong linear relationship between number of i/o heavy processes and the time to access a single block.  
+This is because the scheduler will try to ensure fair allocation of a resource which even a single process can saturate, thus $n$ processes will get $\frac{1}{n}$ parts of the performance they could have had if they were the only process.
+

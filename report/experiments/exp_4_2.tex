@@ -1,0 +1,13 @@
+Next we wish to measure the avarege file system reading time in three access patterns (sequential, random block in an opened file, and random lookup in a freshly opened file).
+We measure files from 512 bytes up to 250MB.
+For each file size, we repeat each experiment ten times.
+
+Sequential reading is done by opening a file and reading all blocks from start to finish.  We randomly sample 100 of the blocks and measure the time for the block to be read and report the mean/min/max.
+
+Random reading is only measured for files with at least 16 file system blocks of 4096 bytes.
+For an already open file we measure performance by opening the file, generating 100 random block numbers to seek to, seeking and reading.
+We measure the time of the seek and the read since this is the operation which would be required for a random block read.
+To measure performance of a freshly opened file, we also perform an experiment with the same process except we open/close the file within the measurement time.
+
+We believe these three access patterns capture the main read only access patterns expected in most programs.
+

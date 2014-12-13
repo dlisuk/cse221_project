@@ -1,0 +1,11 @@
+The file system has several layers of caching which presents a problem for any attempt to measure performance of the underlying file system.
+The lowest cache is the disk's data cache, then the operating system provides a layer of cacheing, and finally typical glibc file operations (fread, fopen, etc) provides a third layer of caching.
+Since our goal is to measure the raw system performance as much as possible we use the raw OS interface (open, read, etc) instead of the more standard glibc operations.
+Additionally, we utilize the {\tt O_DIRECT} flag to bypass the OS caching system as much as possible.
+Additionally we use the {\tt O_SYNC } flag to ensure syncronous reading to ensure we are  measuring complete reading time.
+
+All reads are performed a single file system block of 4096 bytes at a time.
+This is the smallest unit of storage readable using the direct disc access system and thus the most sensible thing to measure.
+
+One thing of note is that our disk is not a typical hard drive but instead a class 10 SD card.
+Random reading benchmarks \cite{sdcard_2} have shown random read times for a 4K file system block to be on the order of 4-5 MB/s and sequential read times to be about 20 MB/s.
