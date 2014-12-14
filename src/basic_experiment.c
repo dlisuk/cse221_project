@@ -17,7 +17,7 @@ unsigned long outer_start, outer_end;
 unsigned long delta_int;
 double mean_old, mean_new, var_old, var_new, delta;
 FILE * results;
-int trial;
+int trial, numTrials;
 char datafile[128];
 
 /**
@@ -49,13 +49,16 @@ int main(int argc, char *argv[]){
   datafile[trial-2] = 0; //get rid of ".o"
   strcat(datafile, "_data"); //"experiment_xxx_data"
   results = fopen(datafile, "w");
+  numTrials = MAX_N;
   setup();
   printf("RUNNING MEASURE %d TIMES\n\n", MAX_N);
-  for(trial=0; trial < MAX_N; ++trial){
+  for(trial=0; trial < numTrials; ++trial){
+
+    printf("trial %d\n", trial);
 
     delta_int = measure();
     if(errno){
-      printf("Failed at trial %d\n", trial);
+      printf("Failed at trial %d, error code %d\n", trial, errno);
       fclose(results);
       exit(1);
     }
