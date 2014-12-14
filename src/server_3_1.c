@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define PORT 1337
+#define PORT 2000
 
 void error(const char *msg)
 {

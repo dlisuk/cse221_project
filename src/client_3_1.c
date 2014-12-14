@@ -11,8 +11,8 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "132.239.55.201"
-#define PORT 13370
+#define HOST "192.168.1.166"
+#define PORT 2000
 
 void error(const char *msg)
 {
@@ -51,7 +51,7 @@ void setup()
     bcopy((char *)server->h_addr,
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
-    serv_addr.sin_port = htons(portno);
+    serv_addr.sin_port = htons(PORT);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
         error("ERROR connecting");
     }

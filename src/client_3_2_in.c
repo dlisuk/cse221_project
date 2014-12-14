@@ -11,7 +11,7 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "132.239.55.201"
+#define HOST "192.168.1.166"
 #define PORT 1337
 #define BYTES 14000
 
@@ -41,6 +41,8 @@ void setup()
         fprintf(stderr,"ERROR, no such host\n");
         exit(1);
     }
+
+    portno = PORT;
 
     //fill with zeroes?
     bzero((char *) &serv_addr, sizeof(serv_addr));

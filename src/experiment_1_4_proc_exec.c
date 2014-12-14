@@ -48,55 +48,41 @@ void ltostr(long i, char * buf) {
 }
 
 int main(int argc, char *argv[]) {
-
-  // get start time
   GET_HIGH(et);
+  int trial = 0;
 
-
-  if(argc == 1) {
-    // first run; start first trial
-
-    newargs[PROG_ARG] = execname;
-    newargs[TRIAL_ARG] = "1";
-
-    // allocate null argument
-    newargs[NULL_ARG] = (char*)malloc(1);
-    newargs[NULL_ARG][0]=0;
-
-    dp = fopen(datafile, "w");
-    fclose(dp);
-
-    RESET;
-    execv(execname, newargs);
-  }else{
+  if(argc > 1) {
     // extract trial number from args
-    trial = strtol(argv[TRIAL_ARG], err_ptr, 10);
-  
+    trial = strtol(argv[TRIAL_ARG], 0, 10);
+
     // if time is 4 bytes, write time difference to file
     dp = fopen(datafile, "a");
-    fprintf(dp, "%d\n", et);
+    fprintf(dp, "%d\t%lu\n", trial, et);
+    fflush(dp);
     fclose(dp);
+  }else{
+    dp = fopen(datafile, "w");
+    fprintf(dp, "");
+    fflush(dp);
+    fclose(dp);
+  }
+  // check trial
+  if(trial >= 100) {
+    exit(0);
+  }
+
+  newargs[PROG_ARG] = execname;
+  newargs[NULL_ARG] = (char*)malloc(1);
+  newargs[NULL_ARG][0] = 0;
+  newargs[TRIAL_ARG] = (char*)malloc(33);
+  ltostr(trial+1, newargs[TRIAL_ARG]);
   
-    // check trial
-    if(trial >= MAX_N) {
-      exit(0);
-    }
+  // run next trial
+  RESET;
+  execv(execname, newargs);
   
-    // increment trial, get time, and and continue
-    newargs[PROG_ARG] = execname;
-    newargs[NULL_ARG] = (char*)malloc(1);
-    newargs[NULL_ARG][0] = 0;
-    newargs[TRIAL_ARG] = (char*)malloc(33);
-    ltostr(trial+1, newargs[TRIAL_ARG]);
-  
-    // run next trial
-    RESET;
-    execv(execname, newargs);
-  
-    if(errno) {
-      printf("unable to execute trial %d\n", trial);
-    }
+  if(errno) {
+    printf("unable to execute trial %d\n", trial);
   }
   return 0;
-
 }
