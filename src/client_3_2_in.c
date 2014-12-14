@@ -11,7 +11,7 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "111.222.121.212"
+#define HOST "132.239.55.201"
 #define PORT 1337
 #define BYTES 14000
 

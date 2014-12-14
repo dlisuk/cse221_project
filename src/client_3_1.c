@@ -11,8 +11,8 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "111.222.121.212"
-#define PORT 1337
+#define HOST "132.239.55.201"
+#define PORT 13370
 
 void error(const char *msg)
 {
@@ -35,13 +35,16 @@ void setup()
         error("ERROR opening socket");
     }
 
+    printf("socket established\n");
+
     server = gethostbyname(HOST);
     if (server == NULL) {
         fprintf(stderr,"ERROR, no such host\n");
         exit(1);
     }
 
-    //fill with zeroes?
+    printf("host naem get\n");
+
     bzero((char *) &serv_addr, sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
@@ -52,6 +55,9 @@ void setup()
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
         error("ERROR connecting");
     }
+
+    printf("connect get!\n");
+
 }
 
 unsigned long measure() {

@@ -10,7 +10,7 @@
 #include <netdb.h>
 
 //David: update this when you get home
-#define HOST "111.222.121.212"
+#define HOST "132.239.55.201"
 #define PORT 1337
 
 void error(const char *msg)
