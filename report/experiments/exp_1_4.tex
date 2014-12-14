@@ -1,73 +1,25 @@
-In the fourth experiment, we measure the time of task creation, both for ordinary processes and for kernel threads, and to compare them. Since the last milestone, we have implemented code for testing kernel thread creation time (given below), but unfortunately, we have had difficulty with compiling kernel modules necessary to execute the experiments. We have not yet thought up a good way to estimate task creation time based on the machine specifications. 
-\newline
-\newline
-Ordinary process-creation time was measured through successive {\tt execv} calls. This method could not make use of the experimental framework described in the introduction to the experiments section, because the ``execv" call kills the calling process on success. Instead, we maintain state (trial number, time of exec call) through command line arguments, as shown below:
+In the fourth experiment, we measure the time of task creation, both for ordinary processes and for kernel threads, and compare them.
 
-\noindent \begin{verbatim}
-int main(int argc, char *argv[]) {
+To measure ordinary process creation time, we created a recursive program.
+The basic idea is that the program relaunches itself using the {\tt excv} function.  
+To ensure the program runs exactly 100 times, the program passes an argument {\tt trial} which is assumed to be 0 on first run and is incremented each re run.
+Before recursing, the program resets the processor cycle counter to 0 and then the first thing the new process does is check the processor cycle counter.
+This cycle count measures how many cycles occured between the {\tt excv} call and the first line of execution for the new process.
+Thus we measure the time to create the new process.
 
-  GET_HIGH(end);
+To measure kthread creation time, we developed a kernel module and load it using insmod.
+Upon loading, the loops 100 times, each time resting the cycle counter, starting a thread, and within the thread printing the value of the cycle counter.
+To ensure the thread runs immediately (since we have a single core cpu), the module's main thread is told to sleep briefly after the thread is created.
 
-  if(argc == 1) { // initial run, not a trial
-    newargs[0] = process_name;
-    newargs[1] = "1"; // trial number
-    newargs[2] = [allocate space for time measurement and null terminator]
-    newargs[3] = [NULL STRING];
+The results of these two experiments are tabulated in Table \ref{tab:exp1_4}.
+As you can see it takes about 300k cycles to launch a process and 170k cycles to launch a kernel thread.
+This is in line with expectations of a process taking significantly longer than a thread.
 
-    GET_HIGH(*(unsigned long *)newargs[2]);
-    // run first trial
-    execv(process_name, newargs);
-  }
-
-  // check current trial; if >= MAX_N, exit
-  trial = argv[1];
-  if(trial == MAX_N) exit(0);
-
-  // get passed time
-  start = argv[2];
-  fprintf(datafile, "%ul\n", end - start);
-
-  // set up next trial
-  newargs[0] = process_name;
-  newargs[1] = "[trial+1]";
-  newargs[2] = [allocate space for time measurement and null term]
-  newargs[3] = [NULL STRING];
-  GET_HIGH(*(unsigned long *)newargs[2]);
-  execv(process_name, newargs);
-
-}
-\end{verbatim}
-
-\newpage
-
-Each time the program is run, its command line arguments inform it of 1) whether it is running a trial, and if so 2) which trial it is executing, and finally 3) when the {\tt execv} call that initiated it was made, so that it can calculate the time it took for it to be created.
-\newline
-\newline
-This time turns out to be quite large $-$ 3200000 cycles, with a standard deviation of 130000. 
-\newline
-\newline
-As for kernel threads, we can only speculate at this point, but we imagine that kernel threads will be faster to create, since they enjoy higher priority. The code to test this is as follows (being a kernel module, it could not take advantage of the {\tt basic\_experiment} framework):
-
-\begin{verbatim}
-int reply_with_time(void *data) {
-  GET_HIGH(recv_time);
-  write(c2p[1],"0", 1);
-  return 0;
-}
-
-int exp_init() {
-  for(i = 0; i < MAX_N; ++i) {
-    reset();
-    kthread_create(&reply_with_time,0,"0");
-    read(c2p[0], &c, 1);
-    fprintf(datafile, "%ul\n", recv_time);
-  }
-
-  return 0;
-}
-\end{verbatim}
-
-\noindent Here, the parent thread creates a child thread; reads from a pipe that the child writes to, in order to block as soon as possible; the child then records the time it began executing, and exits; and the parent resumes and records the time of the child's execution in the datafile. 
-\newline
-\newline
-While this method is less than ideal $-$ the parent may resume execution for a short time before blocking and allowing the child thread, which may have been created but not queued, to record its start time $-$ we could not find a way around this. It is possible that we could just take the time between the start and the end of the {\tt kthread\_create} call, but if the child started first, then this would become inaccurate. Perhaps taking the minimum of both measurements will yield a more accurate measurement of kernel thread creation time. We plan to implement these techniques in future measurements.
+\begin{table}
+\begin{tabular}{|c|c|c|}\hline
+& Mean & Standard Deviation \\\hline
+Process &  3161443 & 193338 \\
+Kthread & 172683 & 72571 \\\hline
+\end{tabular}
+\caption{Results of process creation experiment}\label{tab:exp1_4}
+\end{table}
