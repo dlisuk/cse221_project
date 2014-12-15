@@ -1,0 +1,7 @@
+\noindent In the third network experiment, we measured the overhead of establishing a TCP connection. We did this by starting a server on the machine described in the introduction to the network experiments, and repeatedly listening for clients, receiving a quick message, and terminating the connection. The measurement was on the time taken by the ``connect" function call in the client code to complete.
+\\
+\\
+Again, we expect the remote connection to consistently take longer and more variable amounts of time than the loopback connection. 
+\\
+\\
+Our data for this experiment is more well behaved than the other experimental data in this section. The loopback connection setup time was 418784 $\frac{+}{-}$ 97890 cycles, and the two-machine data required 1590593 $\frac{+}{-}$ 649136 cycles.

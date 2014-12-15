@@ -48,64 +48,41 @@ void ltostr(long i, char * buf) {
 }
 
 int main(int argc, char *argv[]) {
-
-  // get start time
   GET_HIGH(et);
+  int trial = 0;
 
+  if(argc > 1) {
+    // extract trial number from args
+    trial = strtol(argv[TRIAL_ARG], 0, 10);
 
-  if(argc == 1) {
-    // first run; start first trial
-
-    newargs[PROG_ARG] = execname;
-    // allocate memory for time
-    //newargs[TIME_ARG] = (char*)malloc(33);
-    //newargs[TIME_ARG][32] = 0;
-    //printf("time argument allocated\n");
-    newargs[TRIAL_ARG] = "1";
-
-    // allocate null argument
-    newargs[NULL_ARG] = (char*)malloc(1);
-    newargs[NULL_ARG][0]=0;
-
-    // create/overwrite data file
-    dp = fopen(datafile, "w");
+    // if time is 4 bytes, write time difference to file
+    dp = fopen(datafile, "a");
+    fprintf(dp, "%d\t%lu\n", trial, et);
+    fflush(dp);
     fclose(dp);
-
-    // exec first trial
-    //GET_HIGH(et);
-    //*(unsigned long *)newargs[TIME_ARG] = et;
-    RESET;
-    execv(execname, newargs);
+  }else{
+    dp = fopen(datafile, "w");
+    fprintf(dp, "");
+    fflush(dp);
+    fclose(dp);
   }
-
-  // extract trial number from args
-  trial = strtol(argv[TRIAL_ARG], err_ptr, 10);
-
-  // if time is 4 bytes, write time difference to file
-  dp = fopen(datafile, "a");
-  fprintf(dp, "%d\n", et);
-  fclose(dp);
-
-  // check trial; exit if 1000000
-  if(trial >= MAX_N) {
+  // check trial
+  if(trial >= 100) {
     exit(0);
   }
 
-  // increment trial, get time, and and continue
   newargs[PROG_ARG] = execname;
   newargs[NULL_ARG] = (char*)malloc(1);
   newargs[NULL_ARG][0] = 0;
   newargs[TRIAL_ARG] = (char*)malloc(33);
   ltostr(trial+1, newargs[TRIAL_ARG]);
-
+  
   // run next trial
   RESET;
   execv(execname, newargs);
-
+  
   if(errno) {
     printf("unable to execute trial %d\n", trial);
   }
-
   return 0;
-
 }
