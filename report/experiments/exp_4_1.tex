@@ -12,16 +12,16 @@ We know the file system cache is the size of the largets $n$ which has a substan
 {\tt
   create file and write n bytes to it
   file = open
-  RESET_TIMER
+  RESET\_TIMER
   while( not end of file )
     read block
-  t1 = ELAPSED_TIME
+  t1 = ELAPSED\_TIME
   
   seek to start of file
-  RESET_TIMER
+  RESET\_TIMER
   while( not end of file )
     read block
-  t2 = ELAPSED_TIME    
+  t2 = ELAPSED\_TIME    
   close file
 }
 
