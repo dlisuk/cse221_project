@@ -4,7 +4,8 @@ We then write the value 1 into every byte in the span and measure the total time
 To measure read bandwidth we repeat the write experiment but read/sum all the values written into the span.
 To improve performance we unroll the writing and reading loop 16 times which should fully occupy the hardware scheduler.
 
-We expect each access within the a cache line to be the same as an access to the l1 cache and each cahce line to have one main memory access.  Thus we expect a total latency of (150*1 + 25*15) = 525 time per cache line or 0.03 bytes accessed per cycle.  
+We expect each access within the a cache line to be the same as an access to the l1 cache and each cache line to have one main memory access.  Thus we expect a total latency of (145*1 + 10*31) = 455 time per cache line or 0.07 bytes accessed per cycle.  This translates to 46 MB/s in memory bandwidth.
+We expect the 32 bytes of a write to be written to a write log and then written all at once so that the time to write will take the time of one memory access or 0.22 bytes per cycle, this translates to 150 MB/s.
 
 Table \ref{tab:exp_2_2} shows our read and write bandwidth.  The read and write bandwidth are both about double our predicted bandwidth.  This is probably accounted for by the chip fetching multiple bytes at once.  A better experiment may use 16 or 32 bit integers rather than 8 bit bytes.  An interesting result is that write bandwidth is a bit higher than read.  It is likely that this is caused by write grouping writing large chunks to memory once the buffers are full. 
 
@@ -13,7 +14,7 @@ Table \ref{tab:exp_2_2} shows our read and write bandwidth.  The read and write 
 \begin{tabular}{|l|l|}
 \hline
 Type  & Bandwidth        \\\hline
-Write & 0.08 Bytes/Cycle \\\hline
-Read  & 0.05 Bytes/Cycle \\ \hline
+Write & 136 MB/s\\\hline
+Read  & 88 MB/s \\ \hline
 \end{tabular}
 \end{table}

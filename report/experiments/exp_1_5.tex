@@ -1,3 +1,4 @@
+
 In this experiment, we measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. 
 
 To measure process context switch, our program forks a child process and creates two blocking pipes between the two.
@@ -22,8 +23,8 @@ This is inline with our expectations.
 \begin{table}
 \begin{tabular}{|c|c|c|}\hline
 & Mean & Standard Deviation \\\hline
-Process &  25347 & 5018\\
-Kthread & 5204 & 561\\\hline
+Process &  25000 & 5018\\
+Kthread & 5200 & 561\\\hline
 \end{tabular}
 \caption{Results of context switch experiment}\label{tab:exp1_5}
 \end{table}

@@ -12,14 +12,14 @@ Upon loading, the loops 100 times, each time resting the cycle counter, starting
 To ensure the thread runs immediately (since we have a single core cpu), the module's main thread is told to sleep briefly after the thread is created.
 
 The results of these two experiments are tabulated in Table \ref{tab:exp1_4}.
-As you can see it takes about 300k cycles to launch a process and 170k cycles to launch a kernel thread.
+As you can see it takes about 3 million cycles to launch a process and 170k cycles to launch a kernel thread.
 This is in line with expectations of a process taking significantly longer than a thread.
 
 \begin{table}
 \begin{tabular}{|c|c|c|}\hline
 & Mean & Standard Deviation \\\hline
-Process &  3161443 & 193338 \\
-Kthread & 172683 & 72571 \\\hline
+Process &  3100000 & 193338 \\
+Kthread & 170000 & 72571 \\\hline
 \end{tabular}
 \caption{Results of process creation experiment}\label{tab:exp1_4}
 \end{table}
