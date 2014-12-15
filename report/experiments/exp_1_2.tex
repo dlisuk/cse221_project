@@ -1,66 +1,26 @@
-The next experiment we ran was to measure the amount of time it takes to run a procedure with 0-7 integer parameters. In addition, we measured the overhead for returning from a function call. We predict that a procedure call with no parameters should take two memory writes for the return address and the stack pointer, for an estimate of 52 cycles. Each parameter should add about 2 cycles for passing the argument through a register. We implement each experiment as follows: 
-\begin{verbatim}
-void function(int v1, int v2, ... int vn){
-  GET_HIGH(end);
-}
+The next experiment we ran was to measure the amount of time it takes to run a procedure with 0-7 integer parameters. 
+The measurement consists of resetting the timer, calling the function, and then having that function  read the instruction counter and return.
+In addition, we measured the overhead for returning from a void function call by resetting the timer within the function and then reading the timer after returning.
 
-unsigned long measure(){
-  int v1 = 1;
-  int v2 = 2;
-  ...
-  int vn = n;
-  GET_HIGH(start);
-  function(v1,v2, ... vn);
-  return end - start;
-}
-\end{verbatim}
+On a procedure call, an ARM machine does the following actions:
+\begin{itemize}
+	\item Push registers to stack (Moving to L1 cache as a block, documented as 3 cycles)
+	\item Copy first three passed arguments registers (1 cycles each since we pass constants)
+	\item Copy additional arguments to memory (3 cycles per argument)
+	\item Write new return pointer and stack pointer (2 cycles total)
+\end{itemize}
+Thus we suspect about 5 cycles for 0 argument functions and 1 cycle per argument up to 3 and then 3 cycles for subsequent arguments.
+A return should be similar to a 1 argument function since it is poping off the stack (possibly a bit slower than pushing), copying the returned value, and then restoring the old return pointer and stack pointer.
 
-\noindent Note that, for standardization purposes, arguments are loaded into variables and passed to the function through these variables. This way, we know that the data is local, in cache and in the TLB, and computing the values to be passed to the function takes the same amount of time. This method is used in later experiments, where procedure call overhead affects the measurement, and must be subtracted.
-\newline
-\newline
-As for procedure return overhead, we predict that it should take a memory read to access the return address, as well as about 2 cycles to pass the return value to a register, for a total of 28 cycles. We implement the return overhead experiment as follows:
-\begin{verbatim}
-void function() {
-  GET_HIGH(start);
-}
-
-unsigned long measure() {
-  function();
-  GET_HIGH(end);
-  return end - start;
-}
-\end{verbatim}
-
-\newpage
-
-\noindent The overhead for a function call is plotted in the table below:
-\newline
-\newline
-\begin{tabular}{c|c|c}
-
-	\textbf{Parameters} & \textbf{Overhead (cycles)} & \textbf{St. Dev.} \\\hline
-	0 & 16 & 0\\\hline
-	1 & 19 & 0\\\hline
-	2 & 24.004 & 0.33\\\hline
-	3 & 23 & 0\\\hline
-	4 & 28.002 & 0.11\\\hline
-	5 & 32 & 0\\\hline
-	6 & 33 & 0\\\hline
-	7 & 37 & 0\\\hline
-
-\end{tabular}
-\newline
-\newline
-
-\begin{comment}
 \begin{figure}[h]
 \centering
 \includegraphics[scale=.5]{experiments/exp_1_2_fig.png}
-\caption{Mean execution time vs number of parameters.  Overhead time included for comparison.  The standard deviation for all experiments was under 1 ns}
+\caption{Mean execution time vs number of parameters.    The standard deviation for all experiments was under 1 cycle}
 \end{figure}
-\end{comment}
 
-\noindent We see that the baseline overhead for a procedure call is actually 19 cycles. Again, our overestimates in memory access time caused us to significantly overestimate procedure call time. Again, dividing the memory estimates by 2, we get 13 cycles for a memory write, yielding an improved estimate of 28 cycles for a procedure call. However, this is still a significant overestimate, so we will need to review our understanding of this architecture's function call ABI. As for the overhead of each additional parameter, we were somewhat more accurate; on average, the additional overhead was 3 cycles per additional parameter. However, we observe anomalous nonlinear increase, and an actual decrease between 2 and 3 parameters. We speculate that this is due to out-of-order execution, which we will have to figure out how to avoid in the future.
-\newline
-\newline
-The overhead for returning from a function call was consistently 16 cycles for each trial in the experiment. In the future, we should compare this with the overhead for actually returning a value from the function.
+In the above figure we plot the mean procedure call time vs number of parameters.
+From here we see that our prediction for zero arguments was exactly correct.  
+Functions of 1-3 arguments was slower than we expected and plateaued between 2/3.
+Functions of 4-7 arguments add about 3-4 cycles per argument inline with predictions.
+The procedure return overhead is 13 cycles with standard deviation of 0 cycles, exactly inline with a function call of 2 arguments.
+This is overhead over prediction is likely caused by additional slowness in popping vs pushing all the registers onto the stack.

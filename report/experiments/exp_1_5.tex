@@ -1,67 +1,30 @@
-In this experiment, we measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. As with the last experiment, we were able to write code for testing kernel thread context switches, but unable to compile or run it. We will present code for both experiments, but we present data only for ordinary process context switches.
-\newline
-\newline
-We induced context switches using the following method:
 
-\noindent \begin{verbatim}
-unsigned long measure() {
+In this experiment, we measure the time taken for a context switch to occur, both for ordinary processes and kernel threads. 
 
-  unsigned long recv_time;
+To measure process context switch, our program forks a child process and creates two blocking pipes between the two.
+The parent writes and the child reads from pipe 1 and the opposite for pipe 2.
+To measure performance, the parent sends a message to child, forcing a context switch.
+The child then resets the instruction counter and sends a message to the parent, forcing a second context switch.
+The parent prints the instruction counter.
+This process cycles 100 times to get sufficient measurements.
 
-  write(p2c[1], "0", 1); // send dummy data to child process
-  // read blocks parent, waits for child to respond with receipt time
-  reset();
-  read(c2p[0], (char*)&recv_time, sizeof(unsigned long)); 
-  
-  return recv_time;
-}
-\end{verbatim}
+To measure kernel context switching we developed a kernel module which spawns a single separate kthread and then force 100 context switches back and forth and measure the switching time.
+Since kernel modules cannot use libc and thus piping, we had to get creative in forcing context switches. 
+We utilize a single mutex lock which is locked by the child and unlocked by the parent.
+Initially the lock is locked and the child thread is created and waits since it tries to lock the locked lock.
+The parent then resets the process counter, unlocks the lock, and uses {\tt wake\_up\_process} on the child and goes to sleep.
+The child should then gets the lock and prints the process counter and then tries to re lock.
+This process cycles 100 times to get sufficient measurements.
 
-\noindent The child reads messages from the parent as follows:
+The results of these two experiments are tabulated in Table \ref{tab:exp1_5}.
+The process context switch time is about 10x slower than the kernel thread context switch time.
+This is inline with our expectations.
 
-\noindent \begin{verbatim}
-while(1) {
-
-  read(p2c[0], &inmsg, 1);
-  GET_HIGH(recv_time);
-  
-  // send time of receipt
-  write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
-}
-\end{verbatim}
-
-\noindent This method is fairly reliable. Immediately after the parent calls ``read", the parent blocks, since there is no way the child has received the message yet on this uniprocessor machine (assuming no context switch occurred between the sending and the read call). This frees the CPU for the child process, which receives the message and immediately records its time. The only overhead comes from the child executing the ``read" call. Assuming there are no other processes scheduled (which we took pains to ensure), this time difference is exactly one context switch.
-\newline
-\newline
-The average time between the message is sent from the parent and received by the child is 25000 cycles, with a standard deviation of 5400. Given that the system call to {\tt read} produces an overhead, which was measured to be 2100 (std. dev. 165), we get an overall time of 22900, +- 5400. In the future, we may wish to profile calls to {\tt read} and {\tt write} on pipes to derive more accurate overhead measurements.
-
-\newpage
-
-\noindent As for kernel threads, we use a similar technique (again though, the kernel thread experiments could not make use of the {\tt basic\_experiment} framework, since they had to be implemented as kernel modules);
-
-\begin{verbatim}
-int exp_init() {
-  //init communication pipes
-  pipe(p2c);
-  pipe(c2p);
-
-  ts = kthread_create(&reply_with_time,0,"0");
-  
-  for(int i = 0; i<MAX_N; ++i) {
-    reset();
-    write(p2c[1],"1",1);
-    read(c2p[0],&in,1);
-    fprintf(datafile, "%ul\n", recv_time); // set by child
-  }
-}
-
-int reply_with_time(void *data) {
-  while(1) {
-    read(p2c[0], &in, 1);
-    GET_HIGH(recv_time);
-    write(c2p[1],"1",1);
-  }
-}
-\end{verbatim}
-
-\noindent As stated before, we were unable to get results for this experiment yet, due to problems compiling and running these tests.
+\begin{table}
+\begin{tabular}{|c|c|c|}\hline
+& Mean & Standard Deviation \\\hline
+Process &  25000 & 5018\\
+Kthread & 5200 & 561\\\hline
+\end{tabular}
+\caption{Results of context switch experiment}\label{tab:exp1_5}
+\end{table}

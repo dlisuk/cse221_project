@@ -1,29 +1,14 @@
 The third experiment we ran was to measure the amount of time taken by making an operating system call.
 To do this we wish to execute a call which will do very little without being cached.  
 We decided to use the {\tt getcpu} system call.
-\newline
-\newline
-We implement this experiment as follows: 
-\begin{verbatim}
-unsigned long measure(){
-  int rc;
-  GET_HIGH(start);
-  rc = syscall(SYS_getcpu);
-  GET_HIGH(end);
-  return end - start;
-}
-\end{verbatim}
 
-We expect this to be about two orders of magnitude larger than the equivalent procedure call overhead, since we have to switch to the OS, do some work, and then switch back to our user program.  We take the sum of the procedure call overhead for a single argument and the overhead for returning from a function, and multiply by 100, to get $(19+16) \times 100 = 2500$ cycles.
+The {\tt getcpu} system call accepts three pointers and writes data into the memory locations pointed to and then returns a single int.
+Thus it dose very little work within the kernel and will be dominated by the entering/exiting of kernel mode.
+We are unsure exactly what the time of a system call will be but expect it to be approximately two orders of magnitude higher than a procedure call (since it requires popping the current state to the stack, switching stacks, etc).
+Thus we suspect the time will be between 500 and 3000 cycles.
 
-The results of the experiment are"
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|}\hline
-Mean & 2111 cycles \\
-SD & 165 cycles\\\hline
-\end{tabular}
-\end{table}
-
-This is roughly what we predicted, though we were off by about 3 standard deviations.
+We find the procedure call to take an average of 2100 cycles with a standard deviation of 165 cycles.
+This is in line with our rough estimations based on magnitude estimations.
+Since the time doesn't significantly decrease after a few calls, the call does no caching (We tried some other sys calls and saw massive drops in delay after the first couple calls, indicating they were being cached.
+Since there is no NULL syscall that always calls into the kernel and does no work,  we are unable to be certain that this is the base overhead for a system call; however, it seems like one of the simplest ones without caching.
+An improved experiment would implement a kernel module that adds a NULL call for this experiment; however, this looks to be a substantial effort.

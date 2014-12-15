@@ -1,42 +1,46 @@
-We developed a general wrapper program which calls an experiment specific inlined function.
-This allows many of our experiments to share the number of running times, the statistic computation code and other things.
-The basic code is shown below.
+Our experiments measure various aspects of the hardware which will be discussed in greater detail throughout this section.
+Full results are tabulated within the appendix at the end of this report.
+Each section will contain the results for the described experiment.
 
-\begin{verbatim}
-void setup();
-void teardown();
-unsigned long measure();
+All our code was developed in standard C.
+Full code is available on Github\cite{github}. 
+Each experiment is in a single C file named as {\tt experiment\_x.c} and writes results into a csv file named {\tt experiment\_x\_data}.
+The string {\tt x} corresponds to the report section number (sans the leading 3) describing the experiment.
+For example {\tt experiment\_2\_1.c} is the memory latency experiment described in section 3.2.1.
 
-int main(void){
-  int trial;
-  unsigned int delta; // measurement
 
-  df = fopen(exp_file_data_name, "w");
+\subsubsection{Framework}
+Many of our experiments utilized a framework consisting of three functions: {\tt setup, measure,} and {\tt teardown}.
+These three functions could then be called by a common runner script which dealt with result writing, looping, and other boilerplate code.
 
-  setup(); // initialize environment for experiment
-  for(trial = 0; trial < MAX_N; ++trial) {
-    delta = measure();
-    fprintf(df, "%ul\n", delta);
-  }
-  teardown();
-  fclose(df);
-}
-\end{verbatim}
+The {\tt setup}, {\tt teardown}, and {\tt measure} functions are implemented separately for each experiment. {\tt setup} sets up the environment necessary to run the experiment, and {\tt teardown} handles any cleaning up that needs to be done afterwards. {\tt measure} returns the measurement for each trial. 
+In general the framework would first call the {\tt setup} function, then loop 100 times calling the {\tt measure} function and printing times to a csv file, finally the {\tt teardown} function was called after everything was completed.
 
-\noindent The {\tt setup}, {\tt teardown}, and {\tt measure} functions are implemented separately for each experiment. {\tt setup} sets up the environment necessary to run the experiment, and {\tt teardown} handles any cleaning up that needs to be done afterwards. {\tt measure} returns the measurement for each trial. We will give approximate c code for each of these experiments, but some details may be missing. We will include full code for each experiment in our final report.
-\newline
-\newline
-Not all of the experiments were able to make use of this framework. We will explicitly identify which experiments these were in the report. Unless otherwise stated, assume that an experiment made use of this framework. Also, for those experiments that did use this framework, not all needed to implement the {\tt setup} and {\tt teardown} methods. Pseudocode for these will only be given when the experiment needed these.
-\newline
-\newline
-Each datapoint is collected and written to an output file for offline processing.
+This framework worked well for stateless tests; however, a number of tests required state and thus could not be integrated into this framework.
+For these we utilized very similar code with minimal necessary modification to ensure all experiments had similar results.
+In particular the process management, memory, and disk code could not be put into this framework.
+These tests will include more detail into their function but usually it duplicates the frameworks behavior but adds state handling code and prints additional information to the results file.
 
-\subsubsection{Computing Results}
+\subsubsection{Measurements}
 
-\noindent We run each test 4978 times and report mean/standard deviation. We first take 5000 measurements, but then exclude the first 2 trials, as well as the highest 20 datapoints, before calculating the mean and variance. This is done to exclude inaccurate data collected as the experiment ``warms up" (ie, loads relevant pages into memory, code and data into L1 cache, etc.), as well as gross outliers from context switches and other uncontrollable interferences.
+In general all of our experiments were run 100 times and the mean and standard deviation were computed.
+We found that tests tended to be pretty consistent in run time so 50-100 tests were sufficient for convergence.
+Up to ten time outliers were censored if they were at least an order of magnitude (10x) larger than other points.  
+It is believed these outliers were caused by uncontrollable interference caused by server load and scheduling issues.
 
 \subsubsection{Getting Time}
-All time measurements in this report are in terms of cycles. Each cycle takes approximately 1.4 ns. We used two macros, {\tt reset} and {\tt GET\_HIGH}, to reset and read the cycle counter into a variable, respectively.
+The ARM processor on the Raspberry Pi contains two instruction counters: one with high precision which increments each instruction and one with low precision which increments every 64 instructions.
+For most experiments the high precision counter was used; however, long running experiments (~6 seconds) saw overflow in the high precision counter and thus would use the low precision counter multiplied by 64.  
+
+By default reading/writing these counters is illegal in user mode. 
+A kernel module was written based on the work of Paul Drongowski\cite{sand} which enables reading/writing of these counters.
+Three macros were written {\tt RESET, GET\_HIGH,} and {\tt GET\_LOW} which set the counters to 0, return the count of the high precision counter, and returned the value in the low precision counter respectively.
+Since they are independent of clock speed (the Pi is easily clocked from 400MHZ up to 1GHZ), we report these raw clock counts along with standard units (using 1.4ns per cycle from our 700 MHZ clocking).
+
+Additionally, to ensure that time is properly measured we add a serializing instruction bofore and after all instructions to reset/read cycle counters.
+This will add a constant execution time to each measurement, but will ensure we have no overlapping experiments nor measure any still running experiments due to out of order execution.
+
 
 \subsubsection{Compilation}
 We use gcc version 4.8.3 with the flag -O0 to prevent optimization.
+We compared the assembly generated by the -O0 and the -O1 optimization levels and found the -O0 one to be closer to the expected code in most cases, O1 would occasionally remove our experimental code since they rarely perform useful work.

@@ -1,14 +1,12 @@
 To run our experiments we used a Raspberry Pi model B single board computer.   
 This is a simple ARM 6 based computer which is availible for under \$50.
-We run a Debian derivative on it for all performance measurements.
+We run a Pi-targeted Debian derivative known as Raspbian on it for all performance measurements.
 See table \ref{tbl:specs} for details on the hardware specs of the machine.
 
 \begin{table}[h]
-\label{tbl:specs}
 \centering
 \begin{tabular}{|l|l|}
 \hline
-                     & Documentation            \\ \hline
 \multicolumn{2}{|c|}{\textbf{CPU}}              \\ \hline
 Type                 & ARM 6 Compatible         \\ \hline
 Model                & ARM1176JZF-S             \\ \hline
@@ -32,4 +30,38 @@ Version             & Wheezy\\ \hline
 Kernel Version  & 3.12.30+ \\\hline
 \end{tabular}
 \caption{Table of specs for the Rasberry Pi Model B\cite{infosheet}\cite{rpicomp}\cite{elinux}}
+\label{tbl:specs}
+
+\end{table}
+
+For the network tests and the remote file system tests, we had to connect to a remote server.
+To do this we employed a early 2014 model Macbook Pro 13 inch with specs described in Table \ref{tbl:macbookspecs}.
+The Pi connected to the lan via a wired gigabit ethernet port and the Mac through 802.11G (54 MB/s).
+Only one hop existed between the two machines.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{\textbf{CPU}}              \\ \hline
+Type                 & Intel Core i5         \\ \hline
+Processor Speed & 2.4Ghz                    \\ \hline
+L1 Cache             & 32KB Data, 32KB Instructions          \\ \hline
+L2 Cache             & 256KB           \\ \hline
+L3 Cache             & 3MB           \\ \hline
+\multicolumn{2}{|c|}{\textbf{Memory}}           \\ \hline
+Size                 &  8GB          \\ \hline
+Bus                  & DDR3                     \\ \hline
+\multicolumn{2}{|c|}{\textbf{Disk}}             \\ \hline
+Type                 & SSD           \\ \hline
+Size                 & 251GB                     \\ \hline
+\multicolumn{2}{|c|}{\textbf{Network Card}}     \\ \hline
+Type                 & Wireless 802.11ac \\ \hline
+Speed                &1 Gigabit                  \\ \hline
+\multicolumn{2}{|c|}{\textbf{Operating System}} \\ \hline
+Type                 & Mac OSX                      \\ \hline
+Version             & 10.9.5 \\\hline
+\end{tabular}
+\caption{Table of specs for Macbook pro used for the server in network and remote file system tests.  Data acquired from system information app.}
+\label{tbl:macbookspecs}
 \end{table}

@@ -1,8 +1,11 @@
-To measure the page fault latency we generate a file containing 4mb of data from {\tt /dev/random}, since the page size is 4KB this corresponds to 1000 pages of data.  
+To measure the page fault latency we generate a file containing 4MB of data from {\tt /dev/random}, since the page size is 4KB this corresponds to 1000 pages of data.  
 We then memory map this file and then measure the latency of reading the first byte of each page.  
+This corresponds to a page fault since the memory makes a block of memory and sets the file on disk to function as it's swapped page source.
+Thus when we request a byte from the region which has not been brough into memory it is the same as a page fault.
+In our later disk experiments, sequential reading of disk blocks, which have the same size and access pattern as we see in this experiment, have a mean latency of 250,000 cycles per block.
+Since the access pattern is similar to our access pattern here, we expect similar performance; however, a common myth is that memory mapping (as used here) is faster than reading (as used in the disk experiments) due to page faulting using a better system compared to disk io.
+Thus our estimate is likely a bit over.
 
-The rasberry pi has a class 10 SD card as its secondary storage device, which is not optimized for the random access typical in paging.  Most performance metrics cited only bandwidth rather than random read latency.  
-However, Tom's Hardware \cite{sdcard} performed a study and found read latency of about 1-2 ms.
-We thus suspect the about 1 million clock cycles per page fault.  
-
-Our experiment showed 2586 cycles per page fault with a standard deviation of 38 cycles.  This is several orders of magnitude faster than our expectation and thus indicates either some kind of cache optimization we are not accounting for or issues with timing.  We are investigating sources of error and have yet to identify the problem.
+Our experiment showed 150,000 cycles per page fault with a standard deviation of 33,000 cycles.
+As expected, this is slightly faster than the performance of regular disk io.
+However, it is within the same order of magnitude.
