@@ -1,10 +1,13 @@
-The first experiment measures the time take to take a measurement (whoa!). This macro expands to three instructions, one of which is a write to memory at a location of our choice. Since memory accesses to L1 cache were measured to be 26 cycles, we expect exactly 2 more cycles for the remaining instructions, for a total of 28. We implement this experiment function: 
-\begin{verbatim}
-unsigned long measure() {
-  GET_HIGH(start);
-  GET_HIGH(end);
-  return end - start;
-}
-\end{verbatim}
+The first experiment measures the number of cycles passed between resetting the instruction counter and then reading it.
+This time is the overhead associated with measuring and will be overhead for all experiments.
 
-This time difference proves to be 11 cycles, with no deviation in any trial. The significant overestimate is probably due to coarse grained memory latency measurements, which might be measuring both read and write time. Dividing the memory latency in half (13 cycles) yields a much closer estimate of 15 cycles.
+This experiment executes the {\tt RESET} macro and then the {\tt GET\_HIGH} macro on the next experiment.
+The {\tt RESET} sets the clocks to 0 and then runs the serializing instruction to prevent OOO execution.
+Since the serializing instruction and clocking will be pipelined one cycle will pass after the zeroing.
+The {\tt GET\_HIGH} executes the serializing instruction (4 cycles from issue to execution), loads the destination variable from memory to a register(3 cycles according to documentation), then copies from the counter register to the variable register (4 cycles from start to register read due to pipeline).
+After the register read the remaining work (transferring variable from register back into memory) will be outside of the measured time.
+Thus we expect 12 cycles to pass from zeroing the counter till reading the counter.
+
+Our experimental results found a mean time of 11 cycles with a standard deviation of 0.
+This is one cycle shorter than our prediction.
+It is probable that the destination reading and the counter copying will be pipelined so the copy takes is fetched while the memory is being read. 

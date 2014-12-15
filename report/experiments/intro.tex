@@ -37,6 +37,9 @@ A kernel module was written based on the work of Paul Drongowski\cite{sand} whic
 Three macros were written {\tt RESET, GET\_HIGH,} and {\tt GET\_LOW} which set the counters to 0, return the count of the high precision counter, and returned the value in the low precision counter respectively.
 Since they are independent of clock speed (the Pi is easily clocked from 400MHZ up to 1GHZ), we report these raw clock counts along with standard units (using 1.4ns per cycle from our 700 MHZ clocking).
 
+Additionally, to ensure that time is properly measured we add a serializing instruction bofore and after all instructions to reset/read cycle counters.
+This will add a constant execution time to each measurement, but will ensure we have no overlapping experiments nor measure any still running experiments due to out of order execution.
+
 
 \subsubsection{Compilation}
 We use gcc version 4.8.3 with the flag -O0 to prevent optimization.
