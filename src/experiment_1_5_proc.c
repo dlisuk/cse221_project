@@ -16,7 +16,6 @@ void setup() {
   if(!fork()) { //child reads and returns msgs forever
 
     char inmsg;
-    unsigned long recv_time;
 
     // for parent to child, close write descriptor
     close(p2c[1]);
@@ -27,7 +26,6 @@ void setup() {
 
       //wait for parent to send msg
       read(p2c[0], &inmsg, 1);
-      GET_HIGH(recv_time);
 
       //if parent indicates done, quit
       if(inmsg == 'd') {
@@ -38,7 +36,8 @@ void setup() {
 
       //else write time of msg reciept
       if(inmsg == '0') {
-      	write(c2p[1], (char*)&recv_time, sizeof(unsigned long));
+  	RESET;
+      	write(c2p[1], "0", 1);
       }
     }
   } else { //parent closes appropriate descriptors
@@ -57,20 +56,12 @@ void teardown() {
 }
 
 unsigned long measure() {
-
-  //unsigned long block_time;
+  char inmsg;
   unsigned long recv_time;
-  //send message to child
-  write(p2c[1], "0", 1);
-  //wait for child response
-  //block_time = 0;
-  int v1 = c2p[0];
-  char * v2 = (char*)&recv_time;
-  int v3 = sizeof(unsigned long);
-  //GET_HIGH(block_time);
-  RESET;
-  read(v1, v2, v3);
 
-  //return block_time;
+  write(p2c[1], "0", 1);
+  read(c2p[0], &inmsg, 1);
+  GET_HIGH(recv_time);
+
   return recv_time;
 }

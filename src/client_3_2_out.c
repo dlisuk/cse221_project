@@ -11,7 +11,7 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "132.239.55.201"
+#define HOST "192.168.1.166"
 #define PORT 1337
 #define BYTES 14000
 
@@ -42,6 +42,8 @@ void setup()
         exit(1);
     }
 
+    portno = PORT;
+
     //fill with zeroes?
     bzero((char *) &serv_addr, sizeof(serv_addr));
 
@@ -63,8 +65,8 @@ void setup()
 unsigned long measure() {
 
     char q;
-    write(sockfd,bigpacket,BYTES);
     RESET;
+    write(sockfd,bigpacket,BYTES);
     read(sockfd,&q,1);
     GET_HIGH(t);
     return t;
