@@ -1,7 +1,7 @@
-\noindent For round-trip time, we measure the time for a recipient to recieve a short (1-byte) message and the time for the recipient to reply. 
+\noindent For round-trip time, we measure the time for a recipient to recieve a short (1-byte) message and the time for the recipient to reply. We tested this by setting up a client on our machine, setting up a server on the auxiliary machine, and timing, on the client side, the lapse between the time it was written (using the {\tt write} call) and the time it received its reply (after the {\tt read} call).
 \\
 \\
-Its difficult to predict this individual value, but it is easy to predict that the loopback connection will be faster than the LAN connection, since there is presumably no transmission time for the loopback connection.
+It is difficult to predict this individual value, but it is easy to predict that the loopback connection will be faster than the LAN connection, since there is presumably no transmission time for the loopback connection.
 \\
 \\
-Our data shows that the loopback connection RTT was 23669 cycles, with standard deviation 657 cycles. This is a pretty stable measurement, and is indeed far shorter and more stable than the two-machine connection, which exhibited an RTT of 1867539 cycles, with a standard deviation of 1256120. The behavior of the connection is far more chaotic than the loopback one, which is expected, although we may have been able to improve it by making sure the network was lightly loaded.
+Our data shows that the loopback connection RTT was 33100 $\pm$920 ns. This is a pretty stable measurement, and is indeed far shorter and more stable than the two-machine connection, which exhibited an RTT of 2600000 $\pm$ 1750000 ns. The behavior of the connection is far more chaotic than the loopback one, which is expected, although we may have been able to improve it by making sure the network was lightly loaded.

@@ -1,6 +1,6 @@
 \noindent The second experiment, which is to measure bandwidth, is split up into an experiment which measures output bandwidth and input bandwidth. In one experiment, a client on our machine sends a large message (14000 bytes) to the server, and the server replies exactly as it did in experiment 3\_1. In the other experiment, the client sends a single byte, and the server sends the 14000 byte packet. We do not expect much difference between the output and input experiments, but we again expect faster and stabler data from the loopback connections. Also, since we know our machine has a 100MBPS network card, we can estimate how much time this transfer would take ideally for the two-machine connection. Let $T$ be the time to transmit the packet, $l$ be the length of the packet, and $b$ be the byte bandwidth:
 \[
-T = \frac{l}{b} = \frac{14000}{102400} = 0.00013
+T = \frac{l}{b} = \frac{14000}{(100\mathrm{MBPs}) \times (1024 \frac{\mathrm{KB}}{\mathrm{MB}}) \times (1024 \frac{\mathrm{B}}{\mathrm{KB}}} = 0.00013 s = .13ms
 \]
 \\
 \\
@@ -10,11 +10,13 @@ Our actual data is as follows:
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Setup} & \textbf{Cycles} & \textbf{Time (ns)}\\\hline
-Loopback, Output & 27202 $\frac{+}{-}$ 934 & ? \\\hline
-Loopback, Input & 63553 $\frac{+}{-}$ 1313 & ? \\\hline
-Two-machine, Output & 694908 $\frac{+}{-}$ 404712 & ? \\\hline
-Two-machine, Input & 164795 $\frac{+}{-}$ 225655 & \\\hline
+Loopback, Output & 27000 $\pm$ 900 & 38000 $\pm$ 1300 \\\hline
+Loopback, Input & 64000 $\pm$ 1300 & 89000 $\pm$ 1800 \\\hline
+Two-machine, Output & 700000 $\pm$ 400000 & 970000 $\pm$ 570000 \\\hline
+Two-machine, Input & 160000 $\pm$ 230000 & 230000 $\pm$ 320000 \\\hline
 \end{tabular}
 ~\\
 
-\noindent As expected, loopback connection communication was significantly cheaper and stabler than two-machine communication. Unexpectedly, the input and output data are very different in both cases. For loopback connections, it was apparently faster for the server to read the large number of bytes, whereas in the two-machine case, it was faster for the client to read them. Furthermore, we get the anomalous result that sending the large data took less time than just sending a 1-byte packet, and we don't really know what to make of it.
+\noindent As expected, loopback connection communication was significantly cheaper and stabler than two-machine communication. Unexpectedly, the input and output data are very different in both cases. For loopback connections, it was apparently faster for the server to read the large number of bytes, whereas in the two-machine case, it was faster for the client to read them. Furthermore, we get the anomalous result that sending the large data took less time than just sending a 1-byte packet, and we don't really know what to make of it
+
+Ignoring overhead considerations, we get that the overall time to send the large packet is about 0.7ms, about 5 times what we would expect. For the input case, it was 0.16ms, which is close to what we would expect.
