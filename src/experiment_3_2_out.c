@@ -1,3 +1,12 @@
+/* Network Experiment 2: Peak Bandwidth, loopback, outward
+ * measures the peak outward bandwidth by setting up a 
+ * loopback connection on the machine; resetting the 
+ * cycle counter; sending a large (14000-byte) message
+ * from the client to thte server; wait for the write to
+ * complete; wait for a small (1-byte) reply message
+ * from the server; measure time elapsed
+ */
+
 #include "basic_experiment.c"
 
 //#include <stdio.h>

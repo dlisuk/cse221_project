@@ -1,5 +1,7 @@
 /* A simple server in the internet domain using TCP
-   The port number is passed as an argument */
+   The port number is passed as an argument 
+   See experiment_3_2_in.c for more details
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

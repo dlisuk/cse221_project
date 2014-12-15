@@ -1,3 +1,20 @@
+/* File System Experiment 2: Read Time
+ * the sequential and random access read
+ * time are measured independently.
+ * to measure the sequential read time, 
+ * a file is read sequentially, one block
+ * at a time, and the time for each read
+ * is recorded.
+ * To measure the random access read time,
+ * two methods are used. The first uses the 
+ * same file that was used in the sequential 
+ * experiment; the second closes the file and
+ * reopens it for every access. This allows us
+ * to differentiate between random access of the
+ * file cache and random access without having 
+ * any data cached.
+ */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -34,28 +51,28 @@ int main(int argc, char *argv[]){
 
 	//Loop on mem size
 	int i, j, k;
-	int n_x = 512;
+	int n = 512;
 	unsigned long delta1[100],deltabuf;
 	int count;
 	int ind;
 	for (i = 1; i <= 20; i++){
 		test_file_write = fopen("/home/pi/remote/tmp", "w");
-		for( j = 0; j < n_x; j ++){
+		for( j = 0; j < n; j ++){
 			fprintf(test_file_write, "%c", 1);
 		}
 		fclose(test_file_write);
 
-		for(j = 0; j< 5; j++){
-			test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC );
-			count = 0;
-			for(k = 0; k < n_x; k+=4096){
+		count = 0;
+		while(count < 100){
+			test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC);
+			for(k = 0; k < n; k+=4096){
 				RESET;
 				read(test_file_read, buffer, 4096);
 				GET_HIGH(deltabuf);
-				if(count > 0){
+				if(count > 100){
 					ind = rand()%count;
 				} else {
-					ind = 0;
+					ind = count;
 				}
 				if(ind < 100){
 					delta1[ind] = deltabuf;
@@ -63,42 +80,42 @@ int main(int argc, char *argv[]){
 				count ++;
 			}
 			close(test_file_read);
+		}
 
-			for( k = 0; k < 100 && k < count; k++){
-				printf("seq\t%d\t%lu\n",n_x,delta1[k]);
-				fprintf(results, "seq\t%d\t%lu\n",n_x,delta1[k]);
-			}
+		for( k = 0; k < 100 && k < count; k++){
+			fprintf(results, "seq\t%d\t%lu\n",n,delta1[k]);
+			printf("seq\t%d\t%lu\n",n,delta1[k]);
+		}
 
-			count = n_x/4096;
-			if(count >= 16){
-				test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC );
-				for(k = -10; k < 100; k++){
-					ind = (rand()%count)*4096;
-					RESET;
-					lseek(test_file_read, ind, SEEK_SET);
-					read(test_file_read, buffer, 4096);
-					GET_HIGH(deltabuf);
-					if(k>=0){
-						fprintf(results, "rand\t%d\t%lu\t%d\n",n_x,deltabuf,ind);
-						printf("rand\t%d\t%lu\t%d\n",n_x,deltabuf,ind);
-					}
+		count = n/4096;
+		if(count >= 16){
+			test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC);
+			for(k = -10; k < 100; k++){
+				ind = (rand()%count)*4096;
+				RESET;
+				lseek(test_file_read, ind, SEEK_SET);
+				read(test_file_read, buffer, 4096);
+				GET_HIGH(deltabuf);
+				if(k>=0){
+					fprintf(results, "rand\t%d\t%lu\t%d\n",n,deltabuf,ind);
+					printf("rand\t%d\t%lu\t%d\n",n,deltabuf,ind);
 				}
+			}
+			close(test_file_read);
+			for(k = -10; k < 100; k++){
+				test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC);
+				ind = (rand()%count)*4096;
+				RESET;
+				lseek(test_file_read, ind, SEEK_SET);
+				read(test_file_read, buffer, 4096);
+				GET_HIGH(deltabuf);
 				close(test_file_read);
-				for(k = -10; k < 100; k++){
-					test_file_read = open("/home/pi/remote/tmp", O_RDONLY | O_DIRECT | O_SYNC );
-					ind = (rand()%count)*4096;
-					RESET;
-					lseek(test_file_read, ind, SEEK_SET);
-					read(test_file_read, buffer, 4096);
-					GET_HIGH(deltabuf);
-					close(test_file_read);
-					if(k>=0){
-						fprintf(results, "open\t%d\t%lu\t%d\n",n_x,deltabuf,ind);
-						printf("open\t%d\t%lu\t%d\n",n_x,deltabuf,ind);
-					}
+				if(k>=0){
+					fprintf(results, "open\t%d\t%lu\t%d\n",n,deltabuf,ind);
+					printf("open\t%d\t%lu\t%d\n",n,deltabuf,ind);
 				}
 			}
 		}
-		n_x*=2;
+		n*=2;
 	}
 }

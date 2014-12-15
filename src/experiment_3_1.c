@@ -1,3 +1,12 @@
+/* Network Experiment 1: RTT, loopback
+ * measures the RTT of a loopback connection
+ * by setting upa loopback connection; sending
+ * a small (1-byte) message from the client
+ * to the server; resetting the cycle counter;
+ * reading the server's reply from the
+ * socket; and measuring the elapsed time
+ */
+
 #include "basic_experiment.c"
 
 //#include <stdio.h>

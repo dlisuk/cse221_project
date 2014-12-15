@@ -1,3 +1,10 @@
+/* CPU Experiment 4: Process creation overhead
+ * measures hte overhead of process creation 
+ * by resetting the cycle counter, calling exec,
+ * and immediately measuring the elapsed time in the
+ * execced process
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

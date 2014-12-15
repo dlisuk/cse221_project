@@ -1,5 +1,7 @@
 /* A simple server in the internet domain using TCP
-   The port number is passed as an argument */
+   The port number is passed as an argument
+   see client_3_3.c for more details
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +28,6 @@ int main(int argc, char *argv[])
 
      portno = PORT;
 
-     while(1) {
      sockfd = socket(AF_INET, SOCK_STREAM, 0);
      if (sockfd < 0) 
         error("ERROR opening socket");
@@ -39,22 +40,24 @@ int main(int argc, char *argv[])
               error("ERROR on binding");
      listen(sockfd,5);
      clilen = sizeof(cli_addr);
-     newsockfd = accept(sockfd, 
-                 (struct sockaddr *) &cli_addr, 
-                 &clilen);
-     if (newsockfd < 0) 
-          error("ERROR on accept");
-     n = read(newsockfd,&q,1);
-     if (n < 0) error("ERROR reading from socket");
-     if(q == '0') {
-       write(newsockfd, "!",1);
+     while(1) {
+       newsockfd = accept(sockfd, 
+                   (struct sockaddr *) &cli_addr, 
+                   &clilen);
+       if (newsockfd < 0) 
+            error("ERROR on accept");
+       n = read(newsockfd,&q,1);
+       if (n < 0) error("ERROR reading from socket");
+       if(q == '0') {
+         write(newsockfd, "!",1);
+         close(newsockfd);
+         close(sockfd);
+         exit(0);
+       }
+       n = write(newsockfd,"k",1);
+       if (n < 0) error("ERROR writing to socket");
        close(newsockfd);
-       close(sockfd);
-       exit(0);
      }
-     n = write(newsockfd,"k",1);
-     if (n < 0) error("ERROR writing to socket");
-     close(newsockfd);
      close(sockfd);
-     }
 }
+

@@ -1,3 +1,5 @@
+/* defines macros necessary to take time measurements */
+
 #define ARMV6_PMCR_ENABLE               (1 << 0)
 #define ARMV6_PMCR_CTR01_RESET          (1 << 1)
 #define ARMV6_PMCR_CCOUNT_RESET         (1 << 2)

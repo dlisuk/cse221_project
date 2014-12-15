@@ -1,3 +1,11 @@
+/* CPU Experiment 1: measurement overhead
+ * measures the overhead of taking a time
+ * measurement by resetting the cycle
+ * counter, and immediately calling
+ * the "GET_HIGH" macro to see how much
+ * time elapsed.
+ */
+
 #include "basic_experiment.c"
 
 void setup() {}

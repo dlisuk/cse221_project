@@ -1,5 +1,7 @@
-/*
- * Experiment: read L1 cache
+/* Misc Memory experiment: TLB hit measurement
+ * measures the time to service a TLB hit by
+ * repeatedly reading the same variable and
+ * measuring the time taken to do this
  */
 
 #include "basic_experiment.c"
@@ -21,7 +23,6 @@ unsigned long measure() {
   // also e
   e = 0;
 
-  //return absdiff(s, e);
   asm volatile ("ldr	r4, .L18");
   RESET;
   asm volatile ("ldr	r4, [r4]");

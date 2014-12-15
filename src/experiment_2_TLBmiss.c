@@ -1,3 +1,14 @@
+/* Misc Memory Experiments:TLB miss time
+ * measures the time fto service a TLB miss
+ * by placing a variable "v" in L1 cache;
+ * flushing the pages in the TLB, while
+ * ensuring that a different L1 cache line than
+ * is being used by "v" is read/written during
+ * these flushes; resetting the cycle counter;
+ * reading the value of "v"; measure the
+ * elapsed time
+ */
+
 #include "basic_experiment.c"
 
 char tlb[(TLB_ENTRIES+2)*PAGE_SIZE];

@@ -1,3 +1,11 @@
+/* Network Experiment 3: Connection Setup, loopback
+ * the connection setup overhead for a 
+ * loopback connection by setting up a server on
+ * the machine; starting a client; resetting the
+ * cycle counter; setting up a connection with
+ * the server; and measuring the time elapsed
+ */
+
 #include "basic_experiment.c"
 
 //#include <stdio.h>
@@ -32,7 +40,7 @@ struct stat derp;
 
 void setup()
 {
-numTrials = 800;
+numTrials = 150;
 }
 
 unsigned long measure() {

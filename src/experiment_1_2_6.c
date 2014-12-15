@@ -1,3 +1,7 @@
+/* CPU Experiment 2: Procedure call overhead, 6 arguments
+ * see experiment_1_2_3.c
+ */
+
 #include "basic_experiment.c"
 
 void setup() {}

@@ -1,3 +1,9 @@
+/* Network experiment 3: Connection setup, remote
+ * measures the overhead for setting up a 
+ * TCP connection with a remote server. Nothing
+ * complicated in terms of implementation here.
+ */
+
 #include "basic_experiment.c"
 
 #include <stdio.h>
@@ -11,7 +17,7 @@
 
 //David: update this when you get home
 #define HOST "192.168.1.166"
-#define PORT 2001
+#define PORT 2000
 
 void error(const char *msg)
 {

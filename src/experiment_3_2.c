@@ -1,11 +1,3 @@
-/* Network experiment 1: RTT, remote
- * tests RTT by setting up connection
- * with remote server, sends a single
- * packet, records time between 
- * completion of socket write and 
- * reception of response from server
- */
-
 #include "basic_experiment.c"
 
 //#include <stdio.h>
@@ -19,8 +11,8 @@
 
 
 //David: update the host to your IP when you run these tests
-#define HOST "192.168.1.166"
-#define PORT 2000
+#define HOST "111.222.121.212"
+#define PORT 1337
 
 void error(const char *msg)
 {
@@ -43,36 +35,30 @@ void setup()
         error("ERROR opening socket");
     }
 
-    printf("socket established\n");
-
     server = gethostbyname(HOST);
     if (server == NULL) {
         fprintf(stderr,"ERROR, no such host\n");
         exit(1);
     }
 
-    printf("host naem get\n");
-
+    //fill with zeroes?
     bzero((char *) &serv_addr, sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
     bcopy((char *)server->h_addr,
          (char *)&serv_addr.sin_addr.s_addr,
          server->h_length);
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(portno);
     if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
         error("ERROR connecting");
     }
-
-    printf("connect get!\n");
-
 }
 
 unsigned long measure() {
 
     char q;
     write(sockfd,"1",1);
-    RESET;
+    reset();
     read(sockfd,&q,1);
     GET_HIGH(t);
     return t;

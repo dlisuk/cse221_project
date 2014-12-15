@@ -1,3 +1,22 @@
+/* File System Experiment 4: Contention
+ * contention for file access is measured by
+ * spawning more and more child processes over
+ * time, and have each one attempt to read
+ * the same file, and record the time each
+ * read takes to complete. First, "i" is set to
+ * 1; this is the total number of processes 
+ * that will attempt to read the file 
+ * simultaneously. Gradually, a process will fork, 
+ * one at a time, to eventually reach "i" processes
+ * in the system, so the growth of the contention
+ * can be observed. Once the number of processes has
+ * reached "i", contention is measured for some 
+ * time longer. 
+ * This process is repeated with gradually doubling i
+ * values, until i = 32, so that these effects 
+ * can be measured as the total number of processors grows.
+ */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>

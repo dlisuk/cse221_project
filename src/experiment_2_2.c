@@ -1,6 +1,18 @@
+/* Memory Experiment 2: RAM Bandwidth
+ * In order to measure memory bandwidth,
+ * we again need to ensure that reads don't
+ * go to the cache. We read 16 ints of
+ * data, each 4 memory addresses appart,
+ * so that the same two cache lines are not
+ * used consecutively. We repeat with writes.
+ * we measure the time taken for all of hte
+ * 16 reads to complete, and divide by the
+ * elapsed time to figure out the bandwidth.
+ */
+
 #include <stdio.h>
 #include <math.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 #include "cycles.h"
@@ -8,7 +20,7 @@
 int main(int argc, char *argv[]){
 	double mean_old, mean_new = 0.0;
 	double var_old, var_new   = 0.0;
-	char * data = malloc(16777216 * sizeof(char));
+	int * data = (int*)malloc(16777216);
 	unsigned int i;
 	unsigned long delta;
 	int n = 1;
@@ -26,46 +38,47 @@ int main(int argc, char *argv[]){
 
 	//Write test
 	RESET;
-	for (i = 0; i < 16777216 - 15; i+=16){
+	for (i = 0; i < 16777216.0*sizeof(char)/sizeof(int); i+=128){
 		data[i] = 1;
-		data[i+1] = 1;
-		data[i+2] = 1;
-		data[i+3] = 1;
-		data[i+4] = 1;
-		data[i+5] = 1;
-		data[i+6] = 1;
-		data[i+7] = 1;
 		data[i+8] = 1;
-		data[i+9] = 1;
-		data[i+10] = 1;
-		data[i+11] = 1;
-		data[i+12] = 1;
-		data[i+13] = 1;
-		data[i+14] = 1;
-		data[i+15] = 1;
+		data[i+16] = 1;
+		data[i+24] = 1;
+		data[i+32] = 1;
+		data[i+40] = 1;
+		data[i+48] = 1;
+		data[i+56] = 1;
+		data[i+64] = 1;
+		data[i+72] = 1;
+		data[i+80] = 1;
+		data[i+88] = 1;
+		data[i+96] = 1;
+		data[i+104] = 1;
+		data[i+112] = 1;
+		data[i+120] = 1;
 	}
 	GET_HIGH(delta);
 	fprintf(results, "write\t%d\t%d\t%f\n", delta, (i+16), (i+16.0)/delta);
-	
+
 	unsigned long x = 0;
 	RESET;
-	for (i = 0; i < 16777216 - 15; i+=16){
-		x = data[i];
-		x = data[i+1];
-		x = data[i+2];
-		x = data[i+3];
-		x = data[i+4];
-		x = data[i+5];
-		x = data[i+6];
-		x = data[i+7];
-		x = data[i+8];
-		x = data[i+9];
-		x = data[i+10];
-		x = data[i+11];
-		x = data[i+12];
-		x = data[i+13];
-		x = data[i+14];
-		x = data[i+15];
+	for (i = 0; i < 16777216.0*sizeof(char)/sizeof(int); i+=128){
+		x=data[i] ;
+		x=data[i+8] ;
+		x=data[i+16] ;
+		x=data[i+24] ;
+		x=data[i+32] ;
+		x=data[i+40] ;
+		x=data[i+48] ;
+		x=data[i+56] ;
+		x=data[i+64] ;
+		x=data[i+72] ;
+		x=data[i+80] ;
+		x=data[i+88] ;
+		x=data[i+96] ;
+		x=data[i+104] ;
+		x=data[i+112] ;
+		x=data[i+120] ;
+
 	}
 	GET_HIGH(delta);
 	fprintf(results, "read\t%d\t%d\t%f\t%ul\n", delta, (i+16), (i+16.0)/delta, x);

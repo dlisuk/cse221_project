@@ -1,3 +1,17 @@
+/* File System Experiment 1: Size of file cache
+ * measures the size of the file cache by reading
+ * resetting the cycle counter; reading all of the blocks
+ * of the file; recording this elapsed time in variable
+ * t1; rewinding the file; resetting the cycle counter
+ * again; reading the blocks of the file again; taking
+ * the elapsed time in variable t2; and repeating this 
+ * successively larger files, until the performance of
+ * the second time is essentially the same as the first, 
+ * in which case the file cache is out of rrom by the 
+ * time you have read the entire file, enabling you to find
+ * the file cache size.
+ */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -49,6 +63,7 @@ int main(int argc, char *argv[]){
 				read(test_file_read, &buffer, 4069);
 			}
 			GET_LOW(delta1);
+                        lseek(test_file_read, 0, SEEK_SET);
 			RESET;
 			for(k = 0; k < n; k+=4096){
 				read(test_file_read, &buffer, 4069);

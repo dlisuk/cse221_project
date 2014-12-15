@@ -1,3 +1,11 @@
+/* Network experiment 2: in-bandwidth, remote
+ * Measures average bandwidth of receiving
+ * by establishing connection with remote 
+ * server and sending a message; it then 
+ * waits for a reply, which is a large packet;
+ * time for the read to complete is measured
+ */
+
 #include "basic_experiment.c"
 
 //#include <stdio.h>

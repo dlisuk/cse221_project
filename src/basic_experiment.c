@@ -1,3 +1,12 @@
+/* Template for large portion of experiments,
+ * imported by them to make use of templagte
+ * runs loop that calls "measure", which is 
+ * set up in a different file; writes result,
+ * which is a time measurement, to a file named
+ * after the name of the experiment; catches 
+ * errors, reports their type,
+ */
+
 #include <stdio.h>
 #include <errno.h>
 #include <math.h>
@@ -45,10 +54,18 @@ int main(int argc, char *argv[]){
   //unsigned long * measurements = (unsigned long *)malloc(MAX_N*sizeof(unsigned long));
 
   strcpy(datafile, argv[0]+2); //name of object, without "./" at start
+  printf("arg 0: %s\n", argv[0]);
+  printf("arg 0 + 2: %s\n", argv[0]+2);
+  printf("datafile 1: %s\n", datafile);
   trial = strlen(datafile);
   datafile[trial-2] = 0; //get rid of ".o"
   strcat(datafile, "_data"); //"experiment_xxx_data"
   results = fopen(datafile, "w");
+  if(errno) {
+    printf("Error opening datafile %s: %d\n", datafile, errno);
+    exit(1);
+  }
+  printf("datafile %s opened successfully\n");
   numTrials = MAX_N;
   setup();
   printf("RUNNING MEASURE %d TIMES\n\n", MAX_N);
@@ -82,6 +99,15 @@ int main(int argc, char *argv[]){
   }
   teardown();
   printf("EXPERIMENT COMPLETE\n");
+  fflush(results);
+  if(errno) {
+    printf("errno %d after fflush\n", errno);
+    errno = 0;
+  }
+  fclose(results);
+  if(errno) {
+    printf("errno %d after fclose\n", errno);
+  }
   //fprintf(results, "%d\n", outer_start.tv_nsec);
   //fprintf(results, "%d\n", outer_end.tv_nsec);
   /*

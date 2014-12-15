@@ -1,3 +1,12 @@
+/* CPU Experiment 3: System call overhead
+ * measures the overhead of a system call
+ * by placing its arguments into local
+ * variables, resetting the cycle counter,
+ * making the system call (passing the parameters
+ * via the local variables), and measuring
+ * the elapsed time
+ */
+
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <errno.h>

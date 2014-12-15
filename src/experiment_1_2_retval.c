@@ -1,3 +1,11 @@
+/* CPU Experiment 2: Procedure call overhead, word return
+ * measures the overhead of returning a word value from
+ * a procedure by calling the procedure, placing the return
+ * value in a word variable, resetting the cycle counter,
+ * returning the value via the word variable, and
+ * measuring the time elapsed
+ */
+
 #include "basic_experiment.c"
 
 void setup() {}

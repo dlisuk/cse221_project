@@ -1,3 +1,14 @@
+/* Misc CPU Experiment: pipe read overhead
+ * measures the overhead of reading from
+ * a pipe by forking a process after 
+ * establishing a pair of communication
+ * pipes between them; ensuring that the 
+ * next child read will not block;
+ * resetting the cycle counter; reading
+ * from (one of) the pipe; and 
+ * recording the elapsed time
+ */
+
 #include "basic_experiment.c"
 
 int p2c1[2];

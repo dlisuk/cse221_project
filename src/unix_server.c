@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <sys/un.h>
 #include <stdio.h>
+
+#define SOCK_ADDR "/home/pi/test"
+
 void error(const char *);
 int main(int argc, char *argv[])
 {
@@ -18,7 +21,7 @@ int main(int argc, char *argv[])
        error("creating socket");
    bzero((char *) &serv_addr, sizeof(serv_addr));
    serv_addr.sun_family = AF_UNIX;
-   strcpy(serv_addr.sun_path, argv[1]);
+   strcpy(serv_addr.sun_path, SOCK_ADDR);
    servlen=strlen(serv_addr.sun_path) + 
                      sizeof(serv_addr.sun_family);
    if(bind(sockfd,(struct sockaddr *)&serv_addr,servlen)<0)

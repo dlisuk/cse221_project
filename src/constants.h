@@ -1,3 +1,5 @@
+/* Constants necessary for experiments */
+
 #define MAX_N 100
 #define PAGE_SIZE 4096
 #define L1_PAGES 4

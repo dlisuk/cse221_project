@@ -1,3 +1,12 @@
+/* CPU Experiment 2: procedure call overhead, two arguments
+ * measures the overhead of a call to a procedure with two
+ * arguments by resetting the timer, placing the arguments in
+ * local variables, calling the procedure and passing the 
+ * arguments through the local variables (for standardization)
+ * and within the function, storing the elapsed time in a global
+ * variable
+ */
+
 #include "basic_experiment.c"
 
 void setup() {}

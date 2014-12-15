@@ -1,3 +1,10 @@
+/* Network experiment 3 2: output bandwidth, remote
+ * This experiment measures the peak output bandwidth.
+ * It does this by establishing a connection with a 
+ * remote server, and measuring the time for a write
+ * to complete on a large message. 
+ */
+
 #include "basic_experiment.c"
 
 //#include <stdio.h>

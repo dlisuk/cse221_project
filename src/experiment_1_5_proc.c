@@ -1,3 +1,15 @@
+/* CPU Experiment 5: Context swtich overhead
+ * measures the overhead of a context switch by
+ * forking a process after establishing a 
+ * pair of communication pipes, which block
+ * when one attempts to read them if nobody
+ * has written anything to it; resetting the
+ * cycle counter; sending a message from the 
+ * parent to the child; and measuring the 
+ * elapsed time at which the child receives
+ * the message
+ */
+
 #include "basic_experiment.c"
 
 int p2c[2];

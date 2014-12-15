@@ -1,3 +1,13 @@
+/* Memory Experiment 3: Page Fault time
+ * We measure the time to service a page
+ * fault by memory mapping a file, and
+ * timing the read of the first byte 
+ * from a sequence of pages. Since memory-
+ * mapped file pages are lazily loaded,
+ * when a new page is accessed, a page
+ * fault happens.
+ */
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h> 
@@ -24,7 +34,7 @@ int main(int argc, char *argv[]){
 	unsigned long delta;
 	int n = 1;
 	int count;
-	
+
 	char * data;
 	int fd = open ("random_file", O_RDONLY);
 	struct stat s;
@@ -35,7 +45,7 @@ int main(int argc, char *argv[]){
 	//Loop on mem size
 	double mean_old, mean_new = 0.0;
 	double var_old, var_new   = 0.0;
-	for (i = 0; i < size; i += 4096*1024 ){
+	for (i = 0; i < size; i += 4096 ){
 		RESET;
 		x += data[i];
 		GET_HIGH(delta);

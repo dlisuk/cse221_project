@@ -1,3 +1,14 @@
+/* Misc CPU Experiment: write call overhead
+ * measures the overhead of writing to 
+ * a pipe by forking a process after
+ * establishing pipes for the child
+ * and parent to communicate by; ensuring
+ * that the next write by the child will not
+ * block; reset the cycle counter; writing
+ * to the pipe; and then measuring hte
+ * time elapsed
+ */
+
 #include "basic_experiment.c"
 
 int p2c[2];
