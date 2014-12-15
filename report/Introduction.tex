@@ -1,5 +1,15 @@
-The goal of this project is to obtain a performance profile for a Raspberry Pi model B computer. At this second milestone, we have made significant progress in our timing code.  We've figured out how to access the instruction counter which was undone on last measure.  We thus have much better measurements than our previous milestone.  We've also added experiments covering the memory system.  We still are unable to get the kernel thread test fully working due to issues with compiling arbitrary kernel threads under the ARM linux distribution we are running.  We hope to resolve this issue soon.
+The Rasberry Pi is a single board computer availible for under \$50 which is capable of running Linux distributions made for the ARM architecture.  
+Originally targeted as an embedded computing learning aid, it has taken the world by storm with where an enthusiast community sprung up and utilized it for media centers, simple servers, robotics control boards, etc.
+In this project, we obtain a performance profile of the Rasberry Pi model B computer, the flag ship ``full featured'' model.
 
-Our team consists of Joshua Marxen and David Lisuk. Joshua revised the previous experiments and explored data analysis methods.  David implemented the current memory tests and worked on the timing code. Our compiler is gcc version 4.8.3, as implemented in the Raspbian linux operating system. We disabled any compiler optimizations by compiling with the -O0 flag.
+Our team consists of Joshua Marxen and David Lisuk. 
+David primarily did disk and memory experiments while Josh primarily did OS Services and Network.
+However, both members contributed to all sections and the work distribution was approximately even.
 
-On the report there was an error in communication so the final updates to the old experiments did not get placed on github.  Some sections may refer to old numbers.
+Our compiler is gcc version 4.8.3, as implemented in the Raspbian linux operating system.
+We disabled any compiler optimizations by compiling with the -O0 flag.
+By analyzing the generated assembly code, we have found this optimization level to generate code close to the expected behavior and thus anticipate predictions to line up with measurements.
+
+We evaluate the performance of 4 distinct hardware groups: CPU and OS Services, Memory, Network, and Disk.
+For the rest of this paper, we first describe the Pi's hardware and software stack.
+Then we describe our experiments by describing the general methodology then each of our four hardware groups separately.
