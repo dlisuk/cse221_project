@@ -4,9 +4,9 @@ Each section will contain the results for the described experiment.
 
 All our code was developed in standard C.
 Full code is available on Github\cite{github}. 
-Each experiment is in a single C file named as {\tt experiment_x.c} and writes results into a csv file named {\tt experiment_x_data}.
+Each experiment is in a single C file named as {\tt experiment\_x.c} and writes results into a csv file named {\tt experiment\_x\_data}.
 The string {\tt x} corresponds to the report section number (sans the leading 3) describing the experiment.
-For example {\tt experiment_2_1.c} is the memory latency experiment described in section 3.2.1.
+For example {\tt experiment\_2\_1.c} is the memory latency experiment described in section 3.2.1.
 
 
 \subsubsection{Framework}
@@ -34,7 +34,7 @@ For most experiments the high precision counter was used; however, long running 
 
 By default reading/writing these counters is illegal in user mode. 
 A kernel module was written based on the work of Paul Drongowski\cite{sand} which enables reading/writing of these counters.
-Three macros were written {\tt RESET, GET_HIGH,} and {\tt GET_LOW} which set the counters to 0, return the count of the high precision counter, and returned the value in the low precision counter respectively.
+Three macros were written {\tt RESET, GET\_HIGH,} and {\tt GET\_LOW} which set the counters to 0, return the count of the high precision counter, and returned the value in the low precision counter respectively.
 Since they are independent of clock speed (the Pi is easily clocked from 400MHZ up to 1GHZ), we report these raw clock counts along with standard units (using 1.4ns per cycle from our 700 MHZ clocking).
 
 
